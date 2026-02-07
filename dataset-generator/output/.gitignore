@@ -1,0 +1,5 @@
+# Keep large generated datasets out of git
+# Small sample files are committed for reference
+sql_training_dataset.csv
+__pycache__/
+*.pyc

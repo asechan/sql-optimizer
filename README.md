@@ -69,7 +69,7 @@ ai-sql-optimizer/
 - [x] **Phase 1** — Frontend UI with mock data
 - [x] **Phase 2** — Spring Boot API (dummy response)
 - [x] **Phase 3** — Real SQL parsing with JSqlParser
-- [ ] **Phase 4** — Dataset generator for ML training
+- [x] **Phase 4** — Dataset generator for ML training
 - [ ] **Phase 5** — ML model training & FastAPI prediction service
 - [ ] **Phase 6** — Dockerized full-stack deployment
 - [ ] **Phase 7** — GitHub polish (diagrams, screenshots, API docs)

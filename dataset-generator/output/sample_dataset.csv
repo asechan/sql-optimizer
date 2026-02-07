@@ -1,0 +1,51 @@
+sql,pattern,num_tables,num_joins,num_conditions,num_subqueries,has_wildcard,has_order_by,has_group_by,has_having,has_distinct,has_limit,num_where_columns,num_order_columns,num_group_columns,query_length,execution_time_ms,is_slow
+"SELECT payments.amount, payments.order_id, payments.status, payments.id FROM payments WHERE payments.order_id IN (SELECT orders.id FROM orders);",select_subquery,2,0,1,1,0,0,0,0,0,0,1,0,0,144,474.09,0
+"SELECT orders.created_at, orders.status, orders.total, users.name, users.age FROM orders INNER JOIN users ON orders.user_id = users.id WHERE orders.created_at >= '2022-05-05';",select_join,2,1,1,0,0,0,0,0,0,0,1,0,0,175,192.74,0
+"SELECT created_at FROM notifications WHERE notifications.id >= 1292 ORDER BY notifications.read ASC, notifications.user_id ASC;",select_where_order,1,0,1,0,0,1,0,0,0,0,1,2,0,127,148.7,0
+"SELECT level, message, created_at FROM logs WHERE logs.message != 'value_960' ORDER BY logs.created_at ASC;",select_where_order,1,0,1,0,0,1,0,0,0,0,1,1,0,107,292.8,0
+"SELECT tasks.assignee_id, tasks.id, employees.hire_date, departments.name, departments.manager_id FROM tasks JOIN employees ON tasks.assignee_id = employees.id JOIN departments ON employees.department_id = departments.id WHERE departments.manager_id > 4340;",select_multi_join,3,2,1,0,0,0,0,0,0,0,1,0,0,257,349.02,0
+SELECT status FROM projects WHERE projects.end_date > '2025-07-20';,select_where,1,0,1,0,0,0,0,0,0,0,1,0,0,67,32.32,0
+SELECT priority FROM tasks WHERE tasks.priority < 99 AND tasks.status != 'pending';,select_where,1,0,2,0,0,0,0,0,0,0,2,0,0,83,23.17,0
+"SELECT products.rating, categories.name, categories.id FROM products LEFT JOIN categories ON products.category_id = categories.id;",select_join,2,1,0,0,0,0,0,0,0,0,0,0,0,130,173.92,0
+SELECT * FROM notifications;,simple_select,1,0,0,0,1,0,0,0,0,0,0,0,0,28,31.04,0
+SELECT id FROM shipping;,simple_select,1,0,0,0,0,0,0,0,0,0,0,0,0,24,40.99,0
+SELECT DISTINCT project_id FROM tasks;,select_distinct,1,0,0,0,0,0,0,0,1,0,0,0,0,38,65.75,0
+"SELECT inventory.warehouse_id, inventory.quantity, products.id, products.name FROM inventory JOIN products ON inventory.product_id = products.id WHERE inventory.updated_at > '2020-02-23';",select_join,2,1,1,0,0,0,0,0,0,0,1,0,0,187,143.3,0
+"SELECT rating, name FROM suppliers WHERE suppliers.rating > 4.1 AND suppliers.country >= 'FR';",select_where,1,0,2,0,0,0,0,0,0,0,2,0,0,94,15.36,0
+"SELECT payments.method, COUNT(id), COUNT(order_id) FROM payments WHERE payments.status >= 'inactive' GROUP BY payments.method;",select_group_by,1,0,1,0,0,0,1,0,0,0,1,0,1,126,138.89,0
+"SELECT orders.user_id, products.price, products.rating, inventory.quantity FROM orders INNER JOIN products ON orders.product_id = products.id JOIN inventory ON inventory.product_id = products.id;",select_multi_join,3,2,0,0,0,0,0,0,0,0,0,0,0,195,257.5,0
+"SELECT tasks.project_id, tasks.due_date, COUNT(assignee_id), COUNT(id) FROM tasks GROUP BY tasks.project_id, tasks.due_date;",select_group_by,1,0,0,0,0,0,1,0,0,0,0,0,2,124,208.12,0
+"SELECT products.stock, categories.name, inventory.id, inventory.product_id FROM products JOIN categories ON products.category_id = categories.id JOIN inventory ON inventory.product_id = products.id;",select_multi_join,3,2,0,0,0,0,0,0,0,0,0,0,0,198,258.2,0
+"SELECT customers.email, COUNT(name), COUNT(phone) FROM customers GROUP BY customers.email;",select_group_by,1,0,0,0,0,0,1,0,0,0,0,0,1,90,182.25,0
+"SELECT comments.body, comments.user_id FROM comments WHERE comments.user_id IN (SELECT users.id FROM users);",select_subquery,2,0,1,1,0,0,0,0,0,0,1,0,0,108,255.56,0
+"SELECT tasks.status, tasks.id, tasks.due_date, projects.end_date, projects.id FROM tasks JOIN projects ON tasks.project_id = projects.id WHERE tasks.assignee_id < 9910;",select_join,2,1,1,0,0,0,0,0,0,0,1,0,0,168,174.26,0
+"SELECT employees.id, departments.budget, departments.id FROM employees JOIN departments ON employees.department_id = departments.id WHERE employees.name <= 'value_723' AND employees.salary >= 2808.93;",select_join,2,1,2,0,0,0,0,0,0,0,2,0,0,200,166.97,0
+SELECT * FROM sessions WHERE sessions.id < 3442;,select_where,1,0,1,0,1,0,0,0,0,0,1,0,0,48,44.34,0
+"SELECT reviews.user_id, reviews.rating FROM reviews WHERE reviews.user_id IN (SELECT users.id FROM users WHERE users.status < 'completed');",select_subquery,2,0,1,1,0,0,0,0,0,0,1,0,0,139,405.93,0
+SELECT * FROM projects JOIN departments ON projects.department_id = departments.id WHERE projects.department_id = 4574 OR projects.status < 'cancelled';,select_join,2,1,2,0,1,0,0,0,0,0,2,0,0,152,211.33,0
+"SELECT id, description, name FROM categories WHERE categories.parent_id >= 9933;",select_where,1,0,1,0,0,0,0,0,0,0,1,0,0,80,29.23,0
+"SELECT inventory.warehouse_id, products.created_at, products.id FROM inventory INNER JOIN products ON inventory.product_id = products.id;",select_join,2,1,0,0,0,0,0,0,0,0,0,0,0,137,208.63,0
+"SELECT employees.name, COUNT(hire_date), COUNT(department_id) FROM employees GROUP BY employees.name;",select_group_by,1,0,0,0,0,0,1,0,0,0,0,0,1,101,107.6,0
+"SELECT tasks.priority, employees.department_id, projects.id, projects.name FROM tasks LEFT JOIN employees ON tasks.assignee_id = employees.id LEFT JOIN projects ON tasks.project_id = projects.id INNER JOIN departments ON employees.department_id = departments.id;",select_multi_join,4,3,0,0,0,0,0,0,0,0,0,0,0,262,566.12,1
+"SELECT payments.status, payments.order_id, payments.method, orders.quantity, orders.user_id FROM payments JOIN orders ON payments.order_id = orders.id;",select_join,2,1,0,0,0,0,0,0,0,0,0,0,0,151,212.18,0
+"SELECT status, id FROM projects WHERE projects.status >= 'cancelled';",select_where,1,0,1,0,0,0,0,0,0,0,1,0,0,69,52.23,0
+"SELECT projects.budget, COUNT(end_date) FROM projects GROUP BY projects.budget HAVING COUNT(end_date) >= 58;",select_having,1,0,0,0,0,0,1,1,0,0,0,0,1,108,128.01,0
+"SELECT notifications.message, notifications.id, users.name, users.email FROM notifications LEFT JOIN users ON notifications.user_id = users.id WHERE notifications.user_id > 6276;",select_join,2,1,1,0,0,0,0,0,0,0,1,0,0,178,113.26,0
+SELECT * FROM orders WHERE orders.created_at <= '2023-08-01' OR orders.id < 4893 LIMIT 100;,select_limit,1,0,2,0,1,0,0,0,0,1,2,0,0,91,27.59,0
+SELECT country FROM suppliers WHERE suppliers.country != 'DE';,select_where,1,0,1,0,0,0,0,0,0,0,1,0,0,62,42.67,0
+SELECT id FROM comments WHERE comments.user_id >= 5364 OR comments.id > 7450 OR comments.entity_id < 5530 LIMIT 1000;,select_limit,1,0,3,0,0,0,0,0,0,1,3,0,0,117,11.25,0
+SELECT * FROM invoices;,simple_select,1,0,0,0,1,0,0,0,0,0,0,0,0,23,28.86,0
+SELECT * FROM shipping;,simple_select,1,0,0,0,1,0,0,0,0,0,0,0,0,23,18.52,0
+"SELECT level, id, source FROM logs WHERE logs.id <= 6150 AND logs.created_at >= '2025-04-03' AND logs.level <= 'WARN';",select_where,1,0,3,0,0,0,0,0,0,0,3,0,0,118,30.93,0
+"SELECT body, entity_type, entity_id FROM comments WHERE comments.created_at < '2020-07-27';",select_where,1,0,1,0,0,0,0,0,0,0,1,0,0,91,25.05,0
+"SELECT products.category_id, products.stock, products.created_at, categories.description, categories.name FROM products INNER JOIN categories ON products.category_id = categories.id;",select_join,2,1,0,0,0,0,0,0,0,0,0,0,0,182,120.49,0
+"SELECT * FROM logs WHERE logs.created_at != '2023-06-01' ORDER BY logs.level ASC, logs.source ASC;",select_where_order,1,0,1,0,1,1,0,0,0,0,1,2,0,98,182.98,0
+SELECT * FROM products WHERE products.stock > 89;,select_where,1,0,1,0,1,0,0,0,0,0,1,0,0,49,47.38,0
+"SELECT status, created_at, type FROM transactions WHERE transactions.created_at < '2023-12-18';",select_where,1,0,1,0,0,0,0,0,0,0,1,0,0,95,29.94,0
+"SELECT order_id, paid_at FROM payments WHERE payments.amount <= 2987.99 AND payments.status = 'inactive' ORDER BY payments.amount ASC;",select_where_order,1,0,2,0,0,1,0,0,0,0,2,1,0,134,153.15,0
+SELECT * FROM tasks;,simple_select,1,0,0,0,1,0,0,0,0,0,0,0,0,20,71.39,0
+"SELECT name, id, created_at FROM departments WHERE departments.manager_id >= 8057 AND departments.id = 9454 AND departments.created_at != '2025-01-05' ORDER BY departments.id ASC, departments.name ASC;",select_where_order,1,0,3,0,0,1,0,0,0,0,3,2,0,201,216.99,0
+"SELECT DISTINCT budget, status FROM projects WHERE projects.start_date >= '2022-10-20';",select_distinct,1,0,1,0,0,0,0,0,1,0,1,0,0,87,138.84,0
+SELECT * FROM shipping WHERE shipping.id >= 7382;,select_where,1,0,1,0,1,0,0,0,0,0,1,0,0,49,46.58,0
+"SELECT payments.paid_at, payments.status, orders.quantity FROM payments JOIN orders ON payments.order_id = orders.id;",select_join,2,1,0,0,0,0,0,0,0,0,0,0,0,117,273.21,0
+"SELECT message, id, created_at FROM notifications WHERE notifications.created_at < '2024-09-16' AND notifications.message >= 'value_83' ORDER BY notifications.created_at DESC, notifications.type DESC;",select_where_order,1,0,2,0,0,1,0,0,0,0,2,2,0,200,226.25,0
