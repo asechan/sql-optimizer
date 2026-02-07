@@ -1,0 +1,125 @@
+.results-panel {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.results-panel h2 {
+  font-size: 1.25rem;
+  margin-bottom: 1.25rem;
+  color: #f1f5f9;
+}
+
+/* Cards Grid */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.result-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.card-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.card-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+/* Badge */
+.badge {
+  display: inline-block;
+  padding: 0.35rem 1rem;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  width: fit-content;
+}
+
+.badge-slow {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.badge-fast {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+/* Features */
+.features-card {
+  grid-column: span 1;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+}
+
+.feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.feature-value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #818cf8;
+}
+
+.feature-label {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+}
+
+/* Code Sections */
+.result-section {
+  margin-bottom: 1.25rem;
+}
+
+.result-section h3 {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.code-block {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  padding: 1rem;
+  font-family: "JetBrains Mono", "Fira Code", monospace;
+  font-size: 0.85rem;
+  color: #a5f3fc;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+}
