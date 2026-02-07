@@ -66,9 +66,9 @@ ai-sql-optimizer/
 ## Development Roadmap
 
 - [x] **Phase 0** — Repository scaffold & documentation
-- [ ] **Phase 1** — Frontend UI with mock data
-- [ ] **Phase 2** — Spring Boot API (dummy response)
-- [ ] **Phase 3** — Real SQL parsing with JSqlParser
+- [x] **Phase 1** — Frontend UI with mock data
+- [x] **Phase 2** — Spring Boot API (dummy response)
+- [x] **Phase 3** — Real SQL parsing with JSqlParser
 - [ ] **Phase 4** — Dataset generator for ML training
 - [ ] **Phase 5** — ML model training & FastAPI prediction service
 - [ ] **Phase 6** — Dockerized full-stack deployment

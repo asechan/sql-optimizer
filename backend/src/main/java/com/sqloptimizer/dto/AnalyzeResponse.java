@@ -4,13 +4,17 @@ import java.util.List;
 
 /**
  * Response body for the /analyze endpoint.
+ * Contains parsed query features, performance prediction, index suggestions,
+ * optimized query, and optimization tips.
  */
 public class AnalyzeResponse {
 
     private long predictedTime;
     private boolean isSlow;
     private String suggestedIndex;
+    private List<String> suggestedIndexes;
     private String optimizedQuery;
+    private List<String> optimizationTips;
     private QueryFeatures queryFeatures;
 
     public static class QueryFeatures {
@@ -20,6 +24,14 @@ public class AnalyzeResponse {
         private int subqueries;
         private boolean hasWildcard;
         private boolean hasOrderBy;
+        private boolean hasGroupBy;
+        private boolean hasHaving;
+        private boolean hasDistinct;
+        private boolean hasLimit;
+        private List<String> whereColumns;
+        private List<String> orderByColumns;
+        private List<String> groupByColumns;
+        private String queryType;
 
         public QueryFeatures() {}
 
@@ -45,6 +57,22 @@ public class AnalyzeResponse {
         public void setHasWildcard(boolean hasWildcard) { this.hasWildcard = hasWildcard; }
         public boolean isHasOrderBy() { return hasOrderBy; }
         public void setHasOrderBy(boolean hasOrderBy) { this.hasOrderBy = hasOrderBy; }
+        public boolean isHasGroupBy() { return hasGroupBy; }
+        public void setHasGroupBy(boolean hasGroupBy) { this.hasGroupBy = hasGroupBy; }
+        public boolean isHasHaving() { return hasHaving; }
+        public void setHasHaving(boolean hasHaving) { this.hasHaving = hasHaving; }
+        public boolean isHasDistinct() { return hasDistinct; }
+        public void setHasDistinct(boolean hasDistinct) { this.hasDistinct = hasDistinct; }
+        public boolean isHasLimit() { return hasLimit; }
+        public void setHasLimit(boolean hasLimit) { this.hasLimit = hasLimit; }
+        public List<String> getWhereColumns() { return whereColumns; }
+        public void setWhereColumns(List<String> whereColumns) { this.whereColumns = whereColumns; }
+        public List<String> getOrderByColumns() { return orderByColumns; }
+        public void setOrderByColumns(List<String> orderByColumns) { this.orderByColumns = orderByColumns; }
+        public List<String> getGroupByColumns() { return groupByColumns; }
+        public void setGroupByColumns(List<String> groupByColumns) { this.groupByColumns = groupByColumns; }
+        public String getQueryType() { return queryType; }
+        public void setQueryType(String queryType) { this.queryType = queryType; }
     }
 
     public AnalyzeResponse() {}
@@ -55,8 +83,12 @@ public class AnalyzeResponse {
     public void setSlow(boolean slow) { isSlow = slow; }
     public String getSuggestedIndex() { return suggestedIndex; }
     public void setSuggestedIndex(String suggestedIndex) { this.suggestedIndex = suggestedIndex; }
+    public List<String> getSuggestedIndexes() { return suggestedIndexes; }
+    public void setSuggestedIndexes(List<String> suggestedIndexes) { this.suggestedIndexes = suggestedIndexes; }
     public String getOptimizedQuery() { return optimizedQuery; }
     public void setOptimizedQuery(String optimizedQuery) { this.optimizedQuery = optimizedQuery; }
+    public List<String> getOptimizationTips() { return optimizationTips; }
+    public void setOptimizationTips(List<String> optimizationTips) { this.optimizationTips = optimizationTips; }
     public QueryFeatures getQueryFeatures() { return queryFeatures; }
     public void setQueryFeatures(QueryFeatures queryFeatures) { this.queryFeatures = queryFeatures; }
 }

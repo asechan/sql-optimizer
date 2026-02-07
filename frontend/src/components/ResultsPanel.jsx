@@ -3,7 +3,19 @@ import "./ResultsPanel.css";
 export default function ResultsPanel({ result }) {
   if (!result) return null;
 
-  const { predictedTime, isSlow, suggestedIndex, optimizedQuery, queryFeatures } = result;
+  const {
+    predictedTime,
+    isSlow,
+    slow,
+    suggestedIndex,
+    suggestedIndexes,
+    optimizedQuery,
+    optimizationTips,
+    queryFeatures,
+  } = result;
+
+  // Backend serializes "isSlow" as "slow" in JSON
+  const isSlowQuery = isSlow || slow;
 
   return (
     <div className="results-panel">
@@ -13,8 +25,8 @@ export default function ResultsPanel({ result }) {
         {/* Performance Badge */}
         <div className="result-card performance-card">
           <span className="card-label">Performance</span>
-          <span className={`badge ${isSlow ? "badge-slow" : "badge-fast"}`}>
-            {isSlow ? "SLOW" : "FAST"}
+          <span className={`badge ${isSlowQuery ? "badge-slow" : "badge-fast"}`}>
+            {isSlowQuery ? "SLOW" : "FAST"}
           </span>
         </div>
 
@@ -27,6 +39,14 @@ export default function ResultsPanel({ result }) {
               : `${predictedTime}ms`}
           </span>
         </div>
+
+        {/* Query Type */}
+        {queryFeatures?.queryType && (
+          <div className="result-card">
+            <span className="card-label">Query Type</span>
+            <span className="card-value type-value">{queryFeatures.queryType}</span>
+          </div>
+        )}
 
         {/* Query Features */}
         <div className="result-card features-card">
@@ -51,13 +71,44 @@ export default function ResultsPanel({ result }) {
               </div>
             </div>
           )}
+          {/* Feature flags */}
+          {queryFeatures && (
+            <div className="feature-flags">
+              {queryFeatures.hasWildcard && <span className="flag flag-warn">SELECT *</span>}
+              {queryFeatures.hasOrderBy && <span className="flag">ORDER BY</span>}
+              {queryFeatures.hasGroupBy && <span className="flag">GROUP BY</span>}
+              {queryFeatures.hasDistinct && <span className="flag">DISTINCT</span>}
+              {queryFeatures.hasLimit && <span className="flag flag-good">LIMIT</span>}
+              {queryFeatures.hasHaving && <span className="flag">HAVING</span>}
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Suggested Index */}
+      {/* Optimization Tips */}
+      {optimizationTips && optimizationTips.length > 0 && (
+        <div className="result-section tips-section">
+          <h3>Optimization Tips</h3>
+          <ul className="tips-list">
+            {optimizationTips.map((tip, i) => (
+              <li key={i} className="tip-item">{tip}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Suggested Indexes */}
       <div className="result-section">
-        <h3>Suggested Index</h3>
-        <pre className="code-block">{suggestedIndex}</pre>
+        <h3>Suggested Indexes</h3>
+        {suggestedIndexes && suggestedIndexes.length > 0 ? (
+          <div className="index-list">
+            {suggestedIndexes.map((idx, i) => (
+              <pre key={i} className="code-block">{idx}</pre>
+            ))}
+          </div>
+        ) : (
+          <pre className="code-block">{suggestedIndex || "-- No index suggestions"}</pre>
+        )}
       </div>
 
       {/* Optimized Query */}
