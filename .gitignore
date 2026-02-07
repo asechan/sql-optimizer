@@ -1,0 +1,40 @@
+# === Java / Spring Boot ===
+backend/target/
+backend/.mvn/wrapper/maven-wrapper.jar
+*.class
+*.jar
+*.war
+
+# === Node / React ===
+frontend/node_modules/
+frontend/dist/
+
+# === Python ===
+ml-service/__pycache__/
+ml-service/*.pyc
+ml-service/.venv/
+dataset-generator/__pycache__/
+dataset-generator/*.pyc
+dataset-generator/.venv/
+
+# === IDE ===
+.idea/
+.vscode/
+*.iml
+*.swp
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Environment ===
+.env
+*.env.local
+
+# === Docker ===
+docker-compose.override.yml
+
+# === ML artifacts ===
+ml-service/models/*.pkl
+ml-service/models/*.joblib
+dataset-generator/output/
