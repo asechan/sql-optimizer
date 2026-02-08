@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ AI SQL Query Optimizer
+# AI SQL Query Optimizer
 
 **An intelligent, ML-powered tool that analyzes SQL queries, predicts execution performance, and suggests optimizations.**
 
@@ -24,13 +24,13 @@ Built with Java Spring Boot, Python ML, and React.
 
 | Feature | Description |
 |---------|-------------|
-| 🔍 **SQL Query Analysis** | Parses queries with JSqlParser — extracts tables, joins, subqueries, conditions, and 14 structural features |
-| 🤖 **ML Performance Prediction** | GradientBoosting models predict execution time (R² = 0.86) and slow-query probability (97.8% accuracy) |
-| 📊 **Index Recommendations** | Heuristic engine suggests optimal `CREATE INDEX` statements based on WHERE, ORDER BY, and GROUP BY patterns |
-| ✏️ **Query Optimization** | Rule-based rewrites: removes `SELECT *`, adds `LIMIT`, suggests `EXISTS` over `IN`, and more |
-| 🎯 **Confidence Scoring** | ML confidence levels (high / medium / low) based on probability distance from decision boundary |
-| 🔄 **Graceful Fallback** | Automatic heuristic estimation when ML service is unavailable |
-| 🖥️ **Visual Dashboard** | Clean React UI with performance badges, analysis cards, and syntax-highlighted SQL |
+| **SQL Query Analysis** | Parses queries with JSqlParser — extracts tables, joins, subqueries, conditions, and 14 structural features |
+| **ML Performance Prediction** | GradientBoosting models predict execution time (R² = 0.86) and slow-query probability (97.8% accuracy) |
+| **Index Recommendations** | Heuristic engine suggests optimal `CREATE INDEX` statements based on WHERE, ORDER BY, and GROUP BY patterns |
+| **Query Optimization** | Rule-based rewrites: removes `SELECT *`, adds `LIMIT`, suggests `EXISTS` over `IN`, and more |
+| **Confidence Scoring** | ML confidence levels (high / medium / low) based on probability distance from decision boundary |
+| **Graceful Fallback** | Automatic heuristic estimation when ML service is unavailable |
+| **Visual Dashboard** | Clean React UI with performance badges, analysis cards, and syntax-highlighted SQL |
 
 ---
 
