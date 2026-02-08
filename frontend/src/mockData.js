@@ -13,7 +13,7 @@ export const mockAnalysis = {
   optimizedQuery: "SELECT status, total FROM users u JOIN orders o ON u.id = o.user_id WHERE u.status = 'active' AND o.total > 100 ORDER BY o.created_at;",
   optimizationTips: [
     "Replace SELECT * with specific column names to reduce I/O and enable covering indexes.",
-    "ORDER BY without LIMIT forces a full sort \u2014 add LIMIT if only top rows are needed.",
+    "ORDER BY without LIMIT forces a full sort - add LIMIT if only top rows are needed.",
   ],
   queryFeatures: {
     tables: ["users", "orders"],

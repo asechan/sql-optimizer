@@ -1,55 +1,230 @@
+/* ==========================================
+   QUERY INPUT COMPONENT
+   ========================================== */
 .query-input {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.query-input label {
+/* --- Header row --- */
+.qi-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.qi-header label {
   font-weight: 600;
-  font-size: 0.875rem;
-  color: #94a3b8;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+}
+
+.qi-meta {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-family: "JetBrains Mono", monospace;
+  font-weight: 500;
+  transition: color var(--transition-base);
+}
+
+/* --- Textarea wrapper with line numbers --- */
+.textarea-wrapper {
+  display: flex;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  transition:
+    border-color var(--transition-base),
+    box-shadow var(--transition-slow);
+  position: relative;
+}
+
+.textarea-wrapper.focused {
+  border-color: var(--accent-blue);
+  box-shadow:
+    0 0 0 3px rgba(59, 130, 246, 0.1),
+    0 0 20px rgba(59, 130, 246, 0.06);
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+/* Animated top border on focus */
+.textarea-wrapper::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  right: 50%;
+  height: 1px;
+  background: var(--gradient-primary);
+  transition: left var(--transition-slow), right var(--transition-slow);
+  pointer-events: none;
+}
+
+.textarea-wrapper.focused::after {
+  left: 0;
+  right: 0;
+}
+
+.line-numbers {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0;
+  min-width: 38px;
+  background: rgba(5, 10, 21, 0.5);
+  border-right: 1px solid var(--border-primary);
+  user-select: none;
+}
+
+.line-numbers span {
+  display: block;
+  text-align: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.75rem;
+  line-height: 1.65;
+  color: var(--text-muted);
+  transition: color var(--transition-fast);
+}
+
+.textarea-wrapper.focused .line-numbers span {
+  color: var(--text-secondary);
 }
 
 .query-input textarea {
-  background: #1e293b;
-  color: #e2e8f0;
-  border: 1px solid #334155;
-  border-radius: 8px;
+  flex: 1;
+  background: transparent;
+  color: var(--text-primary);
+  border: none;
   padding: 1rem;
   font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
-  font-size: 0.9rem;
-  line-height: 1.5;
+  font-size: 0.88rem;
+  line-height: 1.65;
   resize: vertical;
-  transition: border-color 0.2s;
+  min-height: 140px;
+  transition: color var(--transition-base);
+}
+
+.query-input textarea::placeholder {
+  color: var(--text-muted);
 }
 
 .query-input textarea:focus {
   outline: none;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
 }
 
-.query-input button {
-  align-self: flex-end;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+/* --- Actions row --- */
+.qi-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.25rem;
+}
+
+/* --- Button with ripple --- */
+.analyze-btn {
+  position: relative;
+  overflow: hidden;
+  background: var(--gradient-primary);
+  background-size: 200% 200%;
   color: white;
   border: none;
-  padding: 0.75rem 2rem;
-  border-radius: 8px;
+  padding: 0.8rem 2.25rem;
+  border-radius: var(--radius-md);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   cursor: pointer;
-  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition:
+    transform var(--transition-fast),
+    box-shadow var(--transition-base),
+    background-position var(--transition-slow);
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
 }
 
-.query-input button:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+.analyze-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow:
+    0 6px 20px rgba(59, 130, 246, 0.35),
+    0 2px 8px rgba(139, 92, 246, 0.2);
+  background-position: 100% 0;
 }
 
-.query-input button:disabled {
-  opacity: 0.5;
+.analyze-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+.analyze-btn:disabled {
+  opacity: 0.4;
   cursor: not-allowed;
+  filter: grayscale(0.3);
+}
+
+.analyze-btn.loading {
+  background-position: 100% 0;
+  animation: gradientShift 2s ease infinite;
+}
+
+.btn-text {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ripple effect */
+.btn-ripple {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  transform: scale(0);
+  animation: ripple 0.6s ease-out;
+  pointer-events: none;
+}
+
+/* Loading dots */
+.btn-dots {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.btn-dots i {
+  display: block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  animation: breathe 1.4s ease-in-out infinite;
+}
+
+.btn-dots i:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.btn-dots i:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+@media (max-width: 640px) {
+  .qi-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .analyze-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .line-numbers {
+    min-width: 30px;
+  }
 }
