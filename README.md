@@ -71,22 +71,43 @@ ai-sql-optimizer/
 - [x] **Phase 3** — Real SQL parsing with JSqlParser
 - [x] **Phase 4** — Dataset generator for ML training
 - [x] **Phase 5** — ML model training & FastAPI prediction service
-- [ ] **Phase 6** — Dockerized full-stack deployment
+- [x] **Phase 6** — Dockerized full-stack deployment
 - [ ] **Phase 7** — GitHub polish (diagrams, screenshots, API docs)
 
 ---
 
 ## Quick Start
 
-```bash
-# Full stack (after Phase 6)
-docker-compose up
+### Full Stack (Docker)
 
-# Frontend only (after Phase 1)
+```bash
+docker-compose up --build
+```
+
+| Service   | URL                      |
+|-----------|--------------------------|
+| Frontend  | http://localhost:5173     |
+| Backend   | http://localhost:8080     |
+| ML Service| http://localhost:8000     |
+| PostgreSQL| localhost:5432            |
+
+To stop and clean up:
+
+```bash
+docker-compose down -v
+```
+
+### Local Development
+
+```bash
+# Frontend (dev server with hot reload)
 cd frontend && npm install && npm run dev
 
-# Backend only (after Phase 2)
+# Backend (Spring Boot)
 cd backend && ./mvnw spring-boot:run
+
+# ML Service (FastAPI)
+cd ml-service && pip install -r requirements.txt && uvicorn app:app --reload
 ```
 
 ---

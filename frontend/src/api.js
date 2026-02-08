@@ -1,4 +1,5 @@
-const API_BASE = "http://localhost:8080/api";
+// In Docker, nginx proxies /api → backend:8080. In dev, Vite proxies it.
+const API_BASE = "/api";
 
 export async function analyzeQuery(query) {
   const response = await fetch(`${API_BASE}/analyze`, {

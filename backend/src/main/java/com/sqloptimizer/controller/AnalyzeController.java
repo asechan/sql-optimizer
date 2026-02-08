@@ -25,6 +25,11 @@ import java.util.Map;
 @RequestMapping("/api")
 public class AnalyzeController {
 
+    @GetMapping("/health")
+    public ResponseEntity<Map<String, String>> health() {
+        return ResponseEntity.ok(Map.of("status", "UP"));
+    }
+
     private final SqlParserService sqlParserService;
     private final IndexSuggestionService indexSuggestionService;
     private final QueryOptimizerService queryOptimizerService;
