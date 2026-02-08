@@ -1,16 +1,56 @@
-# React + Vite
+# Frontend — AI SQL Query Optimizer
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + Vite UI for the AI SQL Query Optimizer.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Query Input** — SQL editor with syntax highlighting placeholder
+- **Results Dashboard** — Performance badge, predicted time, confidence, slow probability
+- **Index Suggestions** — Displays recommended `CREATE INDEX` statements
+- **Optimized Query** — Shows rewritten query with applied optimizations
+- **Optimization Tips** — Lists actionable performance improvement suggestions
+- **Query Features** — Shows parsed structural breakdown (tables, joins, conditions, etc.)
+- **Graceful Fallback** — Uses mock data when backend is unavailable
 
-## React Compiler
+## Quick Start
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+npm install
+npm run dev
+```
 
-## Expanding the ESLint configuration
+Open http://localhost:5173
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Build for Production
+
+```bash
+npm run build
+```
+
+Output is in `dist/`, served by Nginx in Docker.
+
+## Project Structure
+
+```
+src/
+├── App.jsx              # Main app layout
+├── App.css              # App-level styles
+├── api.js               # Backend API client (/api/analyze)
+├── mockData.js          # Fallback mock analysis data
+├── main.jsx             # React entry point
+├── index.css            # Global styles
+└── components/
+    ├── QueryInput.jsx   # SQL input textarea + analyze button
+    ├── QueryInput.css
+    ├── ResultsPanel.jsx # Analysis results dashboard
+    └── ResultsPanel.css
+```
+
+## API Integration
+
+The frontend calls `POST /api/analyze` with `{ "query": "..." }`.
+
+- **Docker**: Nginx proxies `/api` → `backend:8080`
+- **Dev**: Vite proxy configured in `vite.config.js`
+
+If the backend is unavailable, the app falls back to mock data and shows a warning banner.
