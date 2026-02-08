@@ -1,16 +1,5 @@
 #!/usr/bin/env python3
-"""
-generate_dataset.py — Main entry point for the SQL training-dataset generator.
-
-Generates a CSV of synthetic SQL queries with extracted features and
-simulated execution times, ready for ML model training in Phase 5.
-
-Usage:
-    python generate_dataset.py                      # defaults from config.py
-    python generate_dataset.py --num 10000           # override count
-    python generate_dataset.py --out my_dataset.csv  # custom output path
-    python generate_dataset.py --seed 42             # reproducible
-"""
+"""Generates a CSV of synthetic SQL queries with features and simulated execution times."""
 
 import argparse
 import os
@@ -86,7 +75,8 @@ def generate_dataset(num_queries: int, seed: int | None = None) -> pd.DataFrame:
 
 def print_summary(df: pd.DataFrame) -> None:
     """Print dataset statistics."""
-    print("\n═══ Dataset Summary ══════════════════════════════════════")
+    print("\nDataset Summary")
+    print("="*55)
     print(f"  Total queries:     {len(df):,}")
     print(f"  Slow queries:      {df['is_slow'].sum():,}  "
           f"({df['is_slow'].mean() * 100:.1f}%)")
@@ -103,7 +93,7 @@ def print_summary(df: pd.DataFrame) -> None:
     for col in FEATURE_COLUMNS:
         print(f"    {col:22s}  mean={df[col].mean():7.2f}  "
               f"min={df[col].min()}  max={df[col].max()}")
-    print("══════════════════════════════════════════════════════════\n")
+    print("="*55 + "\n")
 
 
 def main():
@@ -127,16 +117,16 @@ def main():
     out_path = args.out or os.path.join(OUTPUT_DIR, OUTPUT_FILE)
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
 
-    print(f"\n🔧 Generating {args.num:,} synthetic SQL queries...")
+    print(f"\nGenerating {args.num:,} synthetic SQL queries...")
     start = time.time()
 
     df = generate_dataset(args.num, seed=args.seed)
 
     elapsed = time.time() - start
-    print(f"✅ Generated in {elapsed:.1f}s")
+    print(f"Generated in {elapsed:.1f}s")
 
     df.to_csv(out_path, index=False)
-    print(f"💾 Saved to {out_path}  ({os.path.getsize(out_path) / 1024:.0f} KB)")
+    print(f"Saved to {out_path}  ({os.path.getsize(out_path) / 1024:.0f} KB)")
 
     print_summary(df)
 

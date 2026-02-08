@@ -1,8 +1,5 @@
 package com.sqloptimizer.dto;
 
-/**
- * Request body for the /analyze endpoint.
- */
 public class AnalyzeRequest {
 
     private String query;

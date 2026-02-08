@@ -16,11 +16,9 @@ function App() {
     setError(null);
 
     try {
-      // Call the real backend API
       const data = await analyzeQuery(query);
       setResult({ ...data, originalQuery: query });
     } catch (err) {
-      // Fallback to mock data if backend is unavailable
       console.warn("Backend unavailable, using mock data:", err.message);
       setResult({ ...mockAnalysis, originalQuery: query });
       setError("Backend offline — showing mock data");
@@ -57,7 +55,7 @@ function App() {
       </main>
 
       <footer className="app-footer">
-        <span>AI SQL Optimizer — Built with Spring Boot, FastAPI &amp; React</span>
+        <span>AI SQL Optimizer</span>
       </footer>
     </div>
   );

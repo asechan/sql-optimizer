@@ -17,10 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
-/**
- * REST controller for SQL query analysis.
- * Phase 5: ML-powered prediction via FastAPI service with heuristic fallback.
- */
 @RestController
 @RequestMapping("/api")
 public class AnalyzeController {
@@ -54,7 +50,6 @@ public class AnalyzeController {
                     .body(Map.of("error", "Query must not be empty"));
         }
 
-        // --- Parse the SQL query ---
         ParseResult parseResult;
         try {
             parseResult = sqlParserService.parse(sql);
@@ -63,7 +58,6 @@ public class AnalyzeController {
                     .body(Map.of("error", "Invalid SQL: " + e.getMessage()));
         }
 
-        // --- Build query features ---
         QueryFeatures features = new QueryFeatures(
                 parseResult.getTables(),
                 parseResult.getJoins(),
@@ -81,16 +75,10 @@ public class AnalyzeController {
         features.setGroupByColumns(parseResult.getGroupByColumns());
         features.setQueryType(parseResult.getQueryType());
 
-        // --- Index suggestions ---
         List<String> indexSuggestions = indexSuggestionService.suggest(parseResult);
-
-        // --- Query optimization ---
         OptimizationResult optimization = queryOptimizerService.optimize(sql, parseResult);
-
-        // --- ML-powered prediction (with heuristic fallback) ---
         PredictionResult prediction = mlPredictionService.predict(parseResult, sql);
 
-        // --- Assemble response ---
         AnalyzeResponse response = new AnalyzeResponse();
         response.setPredictedTime(Math.round(prediction.predictedTimeMs()));
         response.setSlow(prediction.isSlow());

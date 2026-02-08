@@ -13,18 +13,10 @@ import net.sf.jsqlparser.statement.select.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
-/**
- * Parses SQL queries using JSqlParser and extracts structural features
- * such as tables, joins, conditions, subqueries, wildcards, and ORDER BY.
- */
 @Service
 public class SqlParserService {
 
-    /**
-     * Result of parsing a SQL query.
-     */
     public static class ParseResult {
         private final List<String> tables;
         private final int joins;
@@ -78,9 +70,6 @@ public class SqlParserService {
         public String getQueryType() { return queryType; }
     }
 
-    /**
-     * Parse a SQL query string and extract features.
-     */
     public ParseResult parse(String sql) throws JSQLParserException {
         Statement statement = CCJSqlParserUtil.parse(sql);
 
@@ -89,7 +78,6 @@ public class SqlParserService {
                 .toUpperCase();
 
         if (!(statement instanceof Select selectStatement)) {
-            // For non-SELECT statements, return basic info
             return new ParseResult(
                     List.of(), 0, 0, 0,
                     false, false, false, false, false, false,
@@ -152,29 +140,24 @@ public class SqlParserService {
                                     List<String> whereColumns, List<String> orderByColumns,
                                     List<String> groupByColumns) {
 
-        // --- SELECT items ---
         if (ps.getSelectItems() != null) {
             for (SelectItem<?> item : ps.getSelectItems()) {
                 if (item.toString().contains("*")) {
                     hasWildcard[0] = true;
                 }
-                // Check for subqueries in select items
                 if (item.getExpression() instanceof ParenthesedSelect) {
                     subqueries[0]++;
                 }
             }
         }
 
-        // --- FROM clause ---
         FromItem fromItem = ps.getFromItem();
         extractTablesFromItem(fromItem, tables, subqueries);
 
-        // --- JOINs ---
         if (ps.getJoins() != null) {
             for (Join join : ps.getJoins()) {
                 joins[0]++;
                 extractTablesFromItem(join.getRightItem(), tables, subqueries);
-                // Join ON conditions
                 if (join.getOnExpressions() != null) {
                     for (Expression onExpr : join.getOnExpressions()) {
                         conditions[0] += countConditions(onExpr);
@@ -183,14 +166,12 @@ public class SqlParserService {
             }
         }
 
-        // --- WHERE ---
         if (ps.getWhere() != null) {
             conditions[0] += countConditions(ps.getWhere());
             extractColumnsFromExpression(ps.getWhere(), whereColumns);
             countSubqueries(ps.getWhere(), subqueries);
         }
 
-        // --- ORDER BY ---
         if (ps.getOrderByElements() != null && !ps.getOrderByElements().isEmpty()) {
             hasOrderBy[0] = true;
             for (OrderByElement ob : ps.getOrderByElements()) {
@@ -200,7 +181,6 @@ public class SqlParserService {
             }
         }
 
-        // --- GROUP BY ---
         if (ps.getGroupBy() != null) {
             hasGroupBy[0] = true;
             GroupByElement groupBy = ps.getGroupBy();
@@ -213,18 +193,15 @@ public class SqlParserService {
             }
         }
 
-        // --- HAVING ---
         if (ps.getHaving() != null) {
             hasHaving[0] = true;
             conditions[0] += countConditions(ps.getHaving());
         }
 
-        // --- DISTINCT ---
         if (ps.getDistinct() != null) {
             hasDistinct[0] = true;
         }
 
-        // --- LIMIT ---
         if (ps.getLimit() != null) {
             hasLimit[0] = true;
         }
@@ -238,9 +215,6 @@ public class SqlParserService {
         }
     }
 
-    /**
-     * Count the number of individual comparison conditions in an expression tree.
-     */
     private int countConditions(Expression expr) {
         if (expr instanceof AndExpression and) {
             return countConditions(and.getLeftExpression()) + countConditions(and.getRightExpression());
@@ -254,9 +228,6 @@ public class SqlParserService {
         }
     }
 
-    /**
-     * Extract column names referenced in WHERE conditions.
-     */
     private void extractColumnsFromExpression(Expression expr, List<String> columns) {
         if (expr instanceof AndExpression and) {
             extractColumnsFromExpression(and.getLeftExpression(), columns);
@@ -292,9 +263,6 @@ public class SqlParserService {
         }
     }
 
-    /**
-     * Count subqueries inside an expression (e.g. WHERE id IN (SELECT ...)).
-     */
     private void countSubqueries(Expression expr, int[] subqueries) {
         if (expr instanceof ParenthesedSelect) {
             subqueries[0]++;

@@ -1,16 +1,9 @@
 #!/usr/bin/env python3
 """
-train_model.py — Train ML models for SQL query performance prediction.
+Train ML models for SQL query performance prediction.
 
-Trains two models on the dataset from Phase 4:
-  1. Regression  — Predicts execution_time_ms (GradientBoostingRegressor)
-  2. Classification — Predicts is_slow (GradientBoostingClassifier)
-
-Outputs:
-  models/regressor.joblib     — Execution time predictor
-  models/classifier.joblib    — Slow-query classifier
-  models/feature_columns.json — Ordered feature list
-  models/metrics.json         — Evaluation metrics
+Trains a GradientBoosting regressor (execution time) and classifier (slow/fast),
+then saves all artifacts to the models/ directory.
 
 Usage:
     python train_model.py
@@ -38,8 +31,6 @@ from sklearn.metrics import (
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
-
-# ── Feature columns (must match dataset-generator/features.py) ───────────
 FEATURE_COLUMNS = [
     "num_tables",
     "num_joins",
@@ -94,13 +85,11 @@ def train(dataset_path: str) -> dict:
     print(f"  Slow ratio (train): {y_cls_train.mean():.3f}")
     print(f"  Slow ratio (test):  {y_cls_test.mean():.3f}")
 
-    # Scale features
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
 
-    # ── Regression model ─────────────────────────────────────────────────
-    print("\n══ Training Regression Model (GradientBoostingRegressor) ══")
+    print("\nTraining regressor...")
     reg = GradientBoostingRegressor(
         n_estimators=200,
         max_depth=5,
@@ -127,8 +116,7 @@ def train(dataset_path: str) -> dict:
     for feat, imp in top_features:
         print(f"    {feat:25s} {imp:.4f}")
 
-    # ── Classification model ─────────────────────────────────────────────
-    print("\n══ Training Classification Model (GradientBoostingClassifier) ══")
+    print("\nTraining classifier...")
     cls = GradientBoostingClassifier(
         n_estimators=150,
         max_depth=4,
@@ -151,7 +139,7 @@ def train(dataset_path: str) -> dict:
     print(f"  Recall:    {cls_metrics['recall']}")
     print(f"  F1:        {cls_metrics['f1']}")
 
-    # ── Save artifacts ───────────────────────────────────────────────────
+
     os.makedirs(MODELS_DIR, exist_ok=True)
 
     joblib.dump(reg, os.path.join(MODELS_DIR, "regressor.joblib"))
@@ -172,7 +160,7 @@ def train(dataset_path: str) -> dict:
     with open(os.path.join(MODELS_DIR, "metrics.json"), "w") as f:
         json.dump(all_metrics, f, indent=2)
 
-    print(f"\n✓ Models saved to {MODELS_DIR}/")
+    print(f"\nModels saved to {MODELS_DIR}/")
     print(f"  regressor.joblib, classifier.joblib, scaler.joblib")
     print(f"  feature_columns.json, metrics.json")
 

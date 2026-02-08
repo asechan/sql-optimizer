@@ -1,12 +1,9 @@
 """
 Configuration for the SQL dataset generator.
-Adjust these values to control the size and diversity of the generated dataset.
 """
 
-# ── Dataset size ──────────────────────────────────────────────────────────
-NUM_QUERIES = 5000          # Total number of SQL queries to generate
+NUM_QUERIES = 5000
 
-# ── Schema simulation ────────────────────────────────────────────────────
 TABLES = [
     "users", "orders", "products", "payments", "reviews",
     "categories", "inventory", "shipping", "suppliers", "employees",
@@ -37,7 +34,6 @@ COLUMNS = {
     "notifications": ["id", "user_id", "type", "message", "read", "created_at"],
 }
 
-# Foreign-key relationships for realistic JOINs: (child_table, child_col, parent_table, parent_col)
 JOIN_PAIRS = [
     ("orders",       "user_id",       "users",       "id"),
     ("orders",       "product_id",    "products",    "id"),
@@ -57,8 +53,6 @@ JOIN_PAIRS = [
     ("notifications","user_id",       "users",       "id"),
 ]
 
-# ── Query complexity distribution (weights) ──────────────────────────────
-# Controls how often each query pattern is generated
 PATTERN_WEIGHTS = {
     "simple_select":       15,
     "select_where":        20,
@@ -72,6 +66,5 @@ PATTERN_WEIGHTS = {
     "select_distinct":     4,
 }
 
-# ── Output ────────────────────────────────────────────────────────────────
 OUTPUT_DIR   = "output"
 OUTPUT_FILE  = "sql_training_dataset.csv"

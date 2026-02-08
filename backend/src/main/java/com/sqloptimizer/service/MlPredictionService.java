@@ -11,11 +11,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Client for the Python ML prediction service (FastAPI).
- * Sends parsed query features and receives execution-time predictions.
- * Falls back to a heuristic estimate if the ML service is unavailable.
- */
 @Service
 public class MlPredictionService {
 
@@ -31,9 +26,6 @@ public class MlPredictionService {
         this.mlServiceUrl = mlServiceUrl;
     }
 
-    /**
-     * Prediction result from the ML service.
-     */
     public record PredictionResult(
             double predictedTimeMs,
             boolean isSlow,
@@ -42,9 +34,6 @@ public class MlPredictionService {
             String source  // "ml" or "heuristic"
     ) {}
 
-    /**
-     * Call the ML service for a prediction. Falls back to heuristic on failure.
-     */
     public PredictionResult predict(ParseResult parseResult, String sql) {
         try {
             return callMlService(parseResult, sql);
@@ -77,8 +66,10 @@ public class MlPredictionService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Map<String, Object>> request = new HttpEntity<>(body, headers);
 
-        ResponseEntity<Map> response = restTemplate.exchange(
-                url, HttpMethod.POST, request, Map.class);
+        @SuppressWarnings("unchecked")
+        ResponseEntity<Map<String, Object>> response = restTemplate.exchange(
+                url, HttpMethod.POST, request,
+                (Class<Map<String, Object>>) (Class<?>) Map.class);
 
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
             Map<String, Object> respBody = response.getBody();
@@ -95,7 +86,7 @@ public class MlPredictionService {
     }
 
     /**
-     * Heuristic fallback (same logic as Phase 3 estimateTime).
+     * Heuristic fallback when the ML service is unreachable.
      */
     private PredictionResult heuristicFallback(ParseResult r) {
         long base = 10;

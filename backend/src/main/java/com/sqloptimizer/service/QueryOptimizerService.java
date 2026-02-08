@@ -1,35 +1,14 @@
 package com.sqloptimizer.service;
 
 import com.sqloptimizer.service.SqlParserService.ParseResult;
-import net.sf.jsqlparser.JSQLParserException;
-import net.sf.jsqlparser.expression.operators.relational.ComparisonOperator;
-import net.sf.jsqlparser.parser.CCJSqlParserUtil;
-import net.sf.jsqlparser.schema.Column;
-import net.sf.jsqlparser.statement.Statement;
-import net.sf.jsqlparser.statement.select.*;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Generates optimized query suggestions based on parsed features.
- * Applies rule-based rewrite heuristics:
- *   - Replace SELECT * with explicit columns when possible
- *   - Add LIMIT to unbounded queries
- *   - Suggest EXISTS over IN for correlated subqueries
- *   - Suggest column pruning for JOIN queries
- */
 @Service
 public class QueryOptimizerService {
 
-    /**
-     * Generate an optimized version of the SQL query along with optimization tips.
-     *
-     * @param originalSql the raw SQL query
-     * @param parseResult parsed feature data
-     * @return optimized SQL string and tips
-     */
     public OptimizationResult optimize(String originalSql, ParseResult parseResult) {
         List<String> tips = new ArrayList<>();
         String optimized = originalSql.trim();
@@ -74,10 +53,8 @@ public class QueryOptimizerService {
             tips.add("GROUP BY on many columns can be expensive — ensure an appropriate composite index exists.");
         }
 
-        // Build the optimized query: for now we apply simple safe rewrites
         optimized = applySimpleRewrites(optimized, parseResult);
 
-        // Ensure it ends with semicolon
         if (!optimized.endsWith(";")) {
             optimized += ";";
         }
@@ -85,15 +62,11 @@ public class QueryOptimizerService {
         return new OptimizationResult(optimized, tips);
     }
 
-    /**
-     * Apply simple, safe query rewrites.
-     */
     private String applySimpleRewrites(String sql, ParseResult parseResult) {
         String result = sql;
 
-        // Replace SELECT * with SELECT column list when we have WHERE columns to hint
+        // Replace SELECT * with a suggested column list based on WHERE/ORDER BY
         if (parseResult.isHasWildcard() && !parseResult.getWhereColumns().isEmpty()) {
-            // Suggest specific columns from WHERE + ORDER BY as a starting point
             List<String> suggestedCols = new ArrayList<>(parseResult.getWhereColumns());
             for (String ob : parseResult.getOrderByColumns()) {
                 if (!suggestedCols.contains(ob)) {
@@ -101,16 +74,12 @@ public class QueryOptimizerService {
                 }
             }
             String colList = String.join(", ", suggestedCols);
-            // Replace first SELECT * occurrence
             result = result.replaceFirst("(?i)SELECT\\s+\\*", "SELECT " + colList);
         }
 
         return result;
     }
 
-    /**
-     * Result of query optimization.
-     */
     public static class OptimizationResult {
         private final String optimizedQuery;
         private final List<String> tips;

@@ -1,7 +1,4 @@
-"""
-SQL Template Engine — generates diverse, realistic SQL queries from
-configurable templates using the schema defined in config.py.
-"""
+"""SQL template engine for generating diverse, realistic SQL queries."""
 
 import random
 from typing import List, Tuple
@@ -9,15 +6,11 @@ from typing import List, Tuple
 from config import TABLES, COLUMNS, JOIN_PAIRS
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────
-
 def _pick_table() -> str:
-    """Pick a random table that has columns defined."""
     return random.choice(TABLES)
 
 
 def _pick_columns(table: str, n: int | None = None) -> List[str]:
-    """Pick n random columns from a table. If n is None, pick 1–4."""
     cols = COLUMNS.get(table, ["id"])
     if n is None:
         n = random.randint(1, min(4, len(cols)))
@@ -25,7 +18,6 @@ def _pick_columns(table: str, n: int | None = None) -> List[str]:
 
 
 def _pick_join_pair(base_table: str | None = None) -> Tuple[str, str, str, str] | None:
-    """Pick a random JOIN relationship. Optionally matching a base table."""
     candidates = JOIN_PAIRS
     if base_table:
         candidates = [
@@ -38,7 +30,7 @@ def _pick_join_pair(base_table: str | None = None) -> Tuple[str, str, str, str] 
 
 
 def _random_value(col: str) -> str:
-    """Generate a plausible literal value for a WHERE condition."""
+    """Generate a plausible literal for a WHERE condition."""
     if col in ("id", "user_id", "product_id", "order_id", "category_id",
                "department_id", "project_id", "assignee_id", "manager_id",
                "warehouse_id", "account_id", "entity_id", "parent_id"):
@@ -71,7 +63,6 @@ def _random_value(col: str) -> str:
 
 
 def _where_condition(table: str, num_conditions: int | None = None) -> Tuple[str, List[str]]:
-    """Build a WHERE clause with 1–3 conditions. Returns (clause, [columns])."""
     cols = COLUMNS.get(table, ["id"])
     if num_conditions is None:
         num_conditions = random.choices([1, 2, 3], weights=[50, 35, 15])[0]
@@ -84,13 +75,12 @@ def _where_condition(table: str, num_conditions: int | None = None) -> Tuple[str
         val = _random_value(col)
         parts.append(f"{table}.{col} {op} {val}")
 
-    joiner = random.choice(["AND", "AND", "AND", "OR"])  # Bias towards AND
+    joiner = random.choice(["AND", "AND", "AND", "OR"])
     clause = f" {joiner} ".join(parts)
     return clause, chosen
 
 
 def _order_by(table: str) -> Tuple[str, List[str]]:
-    """Generate an ORDER BY clause."""
     cols = COLUMNS.get(table, ["id"])
     n = random.randint(1, min(2, len(cols)))
     chosen = random.sample(cols, n)
@@ -100,7 +90,6 @@ def _order_by(table: str) -> Tuple[str, List[str]]:
 
 
 def _agg_function(col: str) -> str:
-    """Wrap a column in a random aggregate function."""
     if col in ("id", "user_id", "order_id", "product_id"):
         return f"COUNT({col})"
     if col in ("price", "total", "amount", "salary", "budget", "quantity"):
@@ -109,10 +98,7 @@ def _agg_function(col: str) -> str:
     return f"COUNT({col})"
 
 
-# ── Query Pattern Generators ─────────────────────────────────────────────
-
 def gen_simple_select() -> dict:
-    """SELECT cols FROM table"""
     table = _pick_table()
     use_wildcard = random.random() < 0.4
     if use_wildcard:
@@ -132,7 +118,6 @@ def gen_simple_select() -> dict:
 
 
 def gen_select_where() -> dict:
-    """SELECT cols FROM table WHERE conditions"""
     table = _pick_table()
     use_wildcard = random.random() < 0.3
     select_cols = ["*"] if use_wildcard else _pick_columns(table)
@@ -151,7 +136,6 @@ def gen_select_where() -> dict:
 
 
 def gen_select_where_order() -> dict:
-    """SELECT cols FROM table WHERE ... ORDER BY ..."""
     table = _pick_table()
     use_wildcard = random.random() < 0.25
     select_cols = ["*"] if use_wildcard else _pick_columns(table)
@@ -171,7 +155,6 @@ def gen_select_where_order() -> dict:
 
 
 def gen_select_limit() -> dict:
-    """SELECT cols FROM table [WHERE ...] LIMIT n"""
     table = _pick_table()
     use_wildcard = random.random() < 0.35
     select_cols = ["*"] if use_wildcard else _pick_columns(table)
@@ -196,7 +179,6 @@ def gen_select_limit() -> dict:
 
 
 def gen_select_join() -> dict:
-    """SELECT cols FROM t1 JOIN t2 ON ... [WHERE ...]"""
     jp = random.choice(JOIN_PAIRS)
     child, child_col, parent, parent_col = jp
 
@@ -233,8 +215,6 @@ def gen_select_join() -> dict:
 
 
 def gen_select_multi_join() -> dict:
-    """SELECT cols FROM t1 JOIN t2 JOIN t3 ..."""
-    # Build a chain of 2–3 joins
     num_joins = random.choice([2, 2, 3])
     used_tables = set()
     join_clauses = []
@@ -297,7 +277,6 @@ def gen_select_multi_join() -> dict:
 
 
 def gen_select_subquery() -> dict:
-    """SELECT ... WHERE col IN (SELECT ... FROM ...)"""
     outer_table = _pick_table()
     inner_jp = _pick_join_pair(outer_table)
     if inner_jp is None:
@@ -340,7 +319,6 @@ def gen_select_subquery() -> dict:
 
 
 def gen_select_group_by() -> dict:
-    """SELECT col, AGG(col) FROM table [WHERE ...] GROUP BY col"""
     table = _pick_table()
     cols = COLUMNS.get(table, ["id"])
 
@@ -380,7 +358,6 @@ def gen_select_group_by() -> dict:
 
 
 def gen_select_having() -> dict:
-    """SELECT col, AGG(..) FROM table GROUP BY col HAVING AGG(..) > n"""
     table = _pick_table()
     cols = COLUMNS.get(table, ["id"])
     gb_col = random.choice(cols)
@@ -408,7 +385,6 @@ def gen_select_having() -> dict:
 
 
 def gen_select_distinct() -> dict:
-    """SELECT DISTINCT cols FROM table [WHERE ...]"""
     table = _pick_table()
     select_cols = _pick_columns(table, random.randint(1, 3))
 
@@ -430,8 +406,6 @@ def gen_select_distinct() -> dict:
         "group_by_columns": [], "pattern": "select_distinct",
     }
 
-
-# ── Registry ─────────────────────────────────────────────────────────────
 
 GENERATORS = {
     "simple_select":       gen_simple_select,

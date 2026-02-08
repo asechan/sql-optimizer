@@ -2,11 +2,6 @@ package com.sqloptimizer.dto;
 
 import java.util.List;
 
-/**
- * Response body for the /analyze endpoint.
- * Contains parsed query features, performance prediction, index suggestions,
- * optimized query, and optimization tips.
- */
 public class AnalyzeResponse {
 
     private long predictedTime;

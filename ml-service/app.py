@@ -1,11 +1,6 @@
 """
-FastAPI ML Prediction Service for the AI SQL Optimizer.
-
-Endpoints:
-  POST /predict     — Predict execution time and slow-query probability
-  GET  /health      — Health check
-  GET  /metrics     — Model evaluation metrics
-  GET  /features    — Expected feature columns
+FastAPI prediction service for the AI SQL Optimizer.
+Serves execution-time and slow-query predictions from trained scikit-learn models.
 """
 
 import json
@@ -18,10 +13,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
-# ── Model paths ───────────────────────────────────────────────────────────
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "models")
 
-# Globals loaded at startup
 regressor = None
 classifier = None
 scaler = None
@@ -29,7 +22,6 @@ feature_columns = None
 metrics_data = None
 
 
-# ── Lifespan: load models once on startup ─────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global regressor, classifier, scaler, feature_columns, metrics_data
@@ -46,12 +38,11 @@ async def lifespan(app: FastAPI):
         with open(metrics_path) as f:
             metrics_data = json.load(f)
 
-    print(f"✓ Models loaded from {MODELS_DIR}")
+    print(f"Models loaded from {MODELS_DIR}")
     print(f"  Features: {feature_columns}")
     yield
 
 
-# ── App ───────────────────────────────────────────────────────────────────
 app = FastAPI(
     title="SQL Optimizer ML Service",
     description="Predicts SQL query execution time and slow-query probability",
@@ -67,32 +58,30 @@ app.add_middleware(
 )
 
 
-# ── Schemas ───────────────────────────────────────────────────────────────
+
 class QueryFeatures(BaseModel):
-    """Input features extracted from SQL parsing."""
-    num_tables: int = Field(ge=0, description="Number of tables referenced")
-    num_joins: int = Field(ge=0, description="Number of JOIN operations")
-    num_conditions: int = Field(ge=0, description="Number of WHERE conditions")
-    num_subqueries: int = Field(ge=0, description="Number of subqueries")
-    has_wildcard: int = Field(ge=0, le=1, description="1 if SELECT *")
-    has_order_by: int = Field(ge=0, le=1, description="1 if ORDER BY present")
-    has_group_by: int = Field(ge=0, le=1, description="1 if GROUP BY present")
-    has_having: int = Field(ge=0, le=1, description="1 if HAVING present")
-    has_distinct: int = Field(ge=0, le=1, description="1 if DISTINCT present")
-    has_limit: int = Field(ge=0, le=1, description="1 if LIMIT present")
-    num_where_columns: int = Field(ge=0, description="Number of columns in WHERE")
-    num_order_columns: int = Field(ge=0, description="Number of columns in ORDER BY")
-    num_group_columns: int = Field(ge=0, description="Number of columns in GROUP BY")
-    query_length: int = Field(ge=0, description="Character length of the SQL query")
+    num_tables: int = Field(ge=0)
+    num_joins: int = Field(ge=0)
+    num_conditions: int = Field(ge=0)
+    num_subqueries: int = Field(ge=0)
+    has_wildcard: int = Field(ge=0, le=1)
+    has_order_by: int = Field(ge=0, le=1)
+    has_group_by: int = Field(ge=0, le=1)
+    has_having: int = Field(ge=0, le=1)
+    has_distinct: int = Field(ge=0, le=1)
+    has_limit: int = Field(ge=0, le=1)
+    num_where_columns: int = Field(ge=0)
+    num_order_columns: int = Field(ge=0)
+    num_group_columns: int = Field(ge=0)
+    query_length: int = Field(ge=0)
 
 
 class PredictionResponse(BaseModel):
-    """ML prediction results."""
-    predicted_time_ms: float = Field(description="Predicted execution time in ms")
-    is_slow: bool = Field(description="Whether the query is predicted to be slow")
-    slow_probability: float = Field(description="Probability of being slow (0-1)")
-    confidence: str = Field(description="Confidence level: high, medium, or low")
-    model_version: str = Field(default="1.0.0")
+    predicted_time_ms: float
+    is_slow: bool
+    slow_probability: float
+    confidence: str
+    model_version: str = "1.0.0"
 
 
 class HealthResponse(BaseModel):
@@ -101,14 +90,13 @@ class HealthResponse(BaseModel):
     feature_count: int
 
 
-# ── Endpoints ─────────────────────────────────────────────────────────────
+
 @app.post("/predict", response_model=PredictionResponse)
 async def predict(features: QueryFeatures):
-    """Predict execution time and slow-query probability from query features."""
     if regressor is None or classifier is None:
         raise HTTPException(status_code=503, detail="Models not loaded")
 
-    # Build feature vector in the correct column order
+    # Build feature vector in column order
     feature_vector = np.array([[
         features.num_tables,
         features.num_joins,
@@ -126,17 +114,15 @@ async def predict(features: QueryFeatures):
         features.query_length,
     ]])
 
-    # Scale features
     feature_scaled = scaler.transform(feature_vector)
 
-    # Predict
     predicted_time = float(regressor.predict(feature_scaled)[0])
-    predicted_time = max(0.1, round(predicted_time, 2))  # Floor at 0.1ms
+    predicted_time = max(0.1, round(predicted_time, 2))
 
     slow_proba = float(classifier.predict_proba(feature_scaled)[0][1])
     is_slow = slow_proba >= 0.5
 
-    # Confidence based on probability distance from decision boundary
+    # Confidence based on distance from decision boundary
     if slow_proba >= 0.85 or slow_proba <= 0.15:
         confidence = "high"
     elif slow_proba >= 0.7 or slow_proba <= 0.3:
@@ -155,7 +141,6 @@ async def predict(features: QueryFeatures):
 
 @app.get("/health", response_model=HealthResponse)
 async def health():
-    """Health check endpoint."""
     return HealthResponse(
         status="ok",
         models_loaded=regressor is not None and classifier is not None,
@@ -165,7 +150,6 @@ async def health():
 
 @app.get("/metrics")
 async def get_metrics():
-    """Return model evaluation metrics from training."""
     if metrics_data is None:
         raise HTTPException(status_code=404, detail="No metrics available")
     return metrics_data
@@ -173,7 +157,6 @@ async def get_metrics():
 
 @app.get("/features")
 async def get_features():
-    """Return the ordered list of expected feature columns."""
     if feature_columns is None:
         raise HTTPException(status_code=503, detail="Features not loaded")
     return {"features": feature_columns, "count": len(feature_columns)}

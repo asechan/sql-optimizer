@@ -258,19 +258,6 @@ ai-sql-optimizer/
 
 ---
 
-## Development Roadmap
-
-- [x] **Phase 0** — Repository scaffold & documentation
-- [x] **Phase 1** — Frontend UI with mock data
-- [x] **Phase 2** — Spring Boot API (dummy response)
-- [x] **Phase 3** — Real SQL parsing with JSqlParser
-- [x] **Phase 4** — Dataset generator for ML training
-- [x] **Phase 5** — ML model training & FastAPI prediction service
-- [x] **Phase 6** — Dockerized full-stack deployment
-- [x] **Phase 7** — GitHub polish (diagrams, API docs, templates)
-
----
-
 ## Future Enhancements
 
 - [ ] **EXPLAIN ANALYZE** integration with live PostgreSQL for real execution plans

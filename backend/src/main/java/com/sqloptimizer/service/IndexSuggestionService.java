@@ -6,23 +6,9 @@ import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * Suggests CREATE INDEX statements based on parsed query features.
- * Uses heuristics:
- *   - Columns in WHERE clauses are prime index candidates
- *   - ORDER BY columns benefit from indexes to avoid sorts
- *   - GROUP BY columns benefit from indexes
- *   - Composite indexes for multi-column WHERE + ORDER BY combos
- */
 @Service
 public class IndexSuggestionService {
 
-    /**
-     * Generate index suggestions based on parsed query features.
-     *
-     * @param result the parse result from SqlParserService
-     * @return a list of suggested CREATE INDEX statements
-     */
     public List<String> suggest(ParseResult result) {
         List<String> suggestions = new ArrayList<>();
 
@@ -32,7 +18,7 @@ public class IndexSuggestionService {
 
         String primaryTable = result.getTables().get(0);
 
-        // 1. Index on WHERE columns
+    // 1. Index on WHERE columns
         List<String> whereColumns = result.getWhereColumns().stream()
                 .distinct()
                 .collect(Collectors.toList());
@@ -50,7 +36,7 @@ public class IndexSuggestionService {
             }
         }
 
-        // 2. Covering index: WHERE + ORDER BY columns
+        // 2. Covering index: WHERE + ORDER BY
         if (!whereColumns.isEmpty() && !result.getOrderByColumns().isEmpty()) {
             List<String> coveringCols = new ArrayList<>(whereColumns);
             for (String ob : result.getOrderByColumns()) {
@@ -71,12 +57,12 @@ public class IndexSuggestionService {
             suggestions.add(formatIndex(primaryTable, obCols));
         }
 
-        // 4. Index on GROUP BY columns
+        // 4. GROUP BY index
         if (!result.getGroupByColumns().isEmpty()) {
             List<String> gbCols = result.getGroupByColumns().stream()
                     .distinct()
                     .collect(Collectors.toList());
-            // Only add if it's different from an existing suggestion
+            // Only add if not already suggested
             String gbIndex = formatIndex(primaryTable, gbCols);
             if (!suggestions.contains(gbIndex)) {
                 suggestions.add(gbIndex);
@@ -92,9 +78,6 @@ public class IndexSuggestionService {
         return suggestions.stream().distinct().collect(Collectors.toList());
     }
 
-    /**
-     * Format a CREATE INDEX suggestion.
-     */
     private String formatIndex(String table, List<String> columns) {
         String indexName = "idx_" + table + "_" + String.join("_", columns);
         String colList = String.join(", ", columns);

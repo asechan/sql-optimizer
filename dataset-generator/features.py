@@ -1,16 +1,10 @@
-"""
-Feature extraction — converts raw query metadata from the template engine
-into a flat numeric feature vector suitable for ML training.
-"""
+"""Feature extraction for SQL query metadata."""
 
 from typing import List
 
 
 def extract_features(query_meta: dict) -> dict:
-    """
-    Extract numeric features from query metadata dict.
-    Returns a flat dict ready for a DataFrame row.
-    """
+    """Extract numeric features from query metadata."""
     tables: List[str] = query_meta.get("tables", [])
 
     return {

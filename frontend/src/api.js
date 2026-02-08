@@ -1,4 +1,3 @@
-// In Docker, nginx proxies /api → backend:8080. In dev, Vite proxies it.
 const API_BASE = "/api";
 
 export async function analyzeQuery(query) {

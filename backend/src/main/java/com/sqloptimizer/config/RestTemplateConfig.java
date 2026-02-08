@@ -7,10 +7,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.time.Duration;
 
-/**
- * Provides a RestTemplate bean configured with sensible timeouts
- * for calling the ML prediction service.
- */
 @Configuration
 public class RestTemplateConfig {
 
