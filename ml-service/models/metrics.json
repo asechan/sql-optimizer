@@ -1,0 +1,32 @@
+{
+  "regression": {
+    "r2": 0.8611,
+    "mae": 39.92,
+    "rmse": 73.49
+  },
+  "classification": {
+    "accuracy": 0.978,
+    "precision": 0.8235,
+    "recall": 0.7636,
+    "f1": 0.7925
+  },
+  "feature_importance": {
+    "num_tables": 0.308,
+    "num_joins": 0.4186,
+    "num_conditions": 0.0053,
+    "num_subqueries": 0.0082,
+    "has_wildcard": 0.0084,
+    "has_order_by": 0.0308,
+    "has_group_by": 0.0345,
+    "has_having": 0.0015,
+    "has_distinct": 0.0055,
+    "has_limit": 0.0009,
+    "num_where_columns": 0.0047,
+    "num_order_columns": 0.0338,
+    "num_group_columns": 0.0203,
+    "query_length": 0.1195
+  },
+  "dataset_size": 5000,
+  "train_size": 4000,
+  "test_size": 1000
+}

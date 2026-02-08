@@ -11,6 +11,9 @@ public class AnalyzeResponse {
 
     private long predictedTime;
     private boolean isSlow;
+    private double slowProbability;
+    private String confidence;
+    private String predictionSource;
     private String suggestedIndex;
     private List<String> suggestedIndexes;
     private String optimizedQuery;
@@ -81,6 +84,12 @@ public class AnalyzeResponse {
     public void setPredictedTime(long predictedTime) { this.predictedTime = predictedTime; }
     public boolean isSlow() { return isSlow; }
     public void setSlow(boolean slow) { isSlow = slow; }
+    public double getSlowProbability() { return slowProbability; }
+    public void setSlowProbability(double slowProbability) { this.slowProbability = slowProbability; }
+    public String getConfidence() { return confidence; }
+    public void setConfidence(String confidence) { this.confidence = confidence; }
+    public String getPredictionSource() { return predictionSource; }
+    public void setPredictionSource(String predictionSource) { this.predictionSource = predictionSource; }
     public String getSuggestedIndex() { return suggestedIndex; }
     public void setSuggestedIndex(String suggestedIndex) { this.suggestedIndex = suggestedIndex; }
     public List<String> getSuggestedIndexes() { return suggestedIndexes; }

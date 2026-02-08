@@ -1,6 +1,9 @@
 export const mockAnalysis = {
   predictedTime: 315,
   slow: true,
+  slowProbability: 0.7823,
+  confidence: "medium",
+  predictionSource: "heuristic",
   suggestedIndex: "CREATE INDEX idx_users_status_total ON users(status, total);",
   suggestedIndexes: [
     "CREATE INDEX idx_users_status_total ON users(status, total);",

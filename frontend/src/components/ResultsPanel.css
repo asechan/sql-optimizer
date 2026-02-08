@@ -195,3 +195,30 @@
   font-size: 1.25rem;
   color: #818cf8;
 }
+
+/* ML Confidence Levels */
+.confidence-high {
+  color: #4ade80;
+  font-size: 1.25rem;
+}
+
+.confidence-medium {
+  color: #fbbf24;
+  font-size: 1.25rem;
+}
+
+.confidence-low {
+  color: #f87171;
+  font-size: 1.25rem;
+}
+
+/* Prediction Source */
+.source-ml {
+  font-size: 1rem;
+  color: #818cf8;
+}
+
+.source-heuristic {
+  font-size: 1rem;
+  color: #94a3b8;
+}

@@ -1,0 +1,16 @@
+[
+  "num_tables",
+  "num_joins",
+  "num_conditions",
+  "num_subqueries",
+  "has_wildcard",
+  "has_order_by",
+  "has_group_by",
+  "has_having",
+  "has_distinct",
+  "has_limit",
+  "num_where_columns",
+  "num_order_columns",
+  "num_group_columns",
+  "query_length"
+]

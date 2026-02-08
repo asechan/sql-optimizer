@@ -7,6 +7,9 @@ export default function ResultsPanel({ result }) {
     predictedTime,
     isSlow,
     slow,
+    slowProbability,
+    confidence,
+    predictionSource,
     suggestedIndex,
     suggestedIndexes,
     optimizedQuery,
@@ -39,6 +42,36 @@ export default function ResultsPanel({ result }) {
               : `${predictedTime}ms`}
           </span>
         </div>
+
+        {/* ML Confidence */}
+        {confidence && (
+          <div className="result-card">
+            <span className="card-label">Confidence</span>
+            <span className={`card-value confidence-${confidence}`}>
+              {confidence.toUpperCase()}
+            </span>
+          </div>
+        )}
+
+        {/* Slow Probability */}
+        {slowProbability != null && (
+          <div className="result-card">
+            <span className="card-label">Slow Probability</span>
+            <span className="card-value">
+              {(slowProbability * 100).toFixed(1)}%
+            </span>
+          </div>
+        )}
+
+        {/* Prediction Source */}
+        {predictionSource && (
+          <div className="result-card">
+            <span className="card-label">Source</span>
+            <span className={`card-value source-${predictionSource}`}>
+              {predictionSource === "ml" ? "🤖 ML Model" : "📐 Heuristic"}
+            </span>
+          </div>
+        )}
 
         {/* Query Type */}
         {queryFeatures?.queryType && (

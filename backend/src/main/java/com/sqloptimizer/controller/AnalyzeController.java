@@ -4,6 +4,8 @@ import com.sqloptimizer.dto.AnalyzeRequest;
 import com.sqloptimizer.dto.AnalyzeResponse;
 import com.sqloptimizer.dto.AnalyzeResponse.QueryFeatures;
 import com.sqloptimizer.service.IndexSuggestionService;
+import com.sqloptimizer.service.MlPredictionService;
+import com.sqloptimizer.service.MlPredictionService.PredictionResult;
 import com.sqloptimizer.service.QueryOptimizerService;
 import com.sqloptimizer.service.QueryOptimizerService.OptimizationResult;
 import com.sqloptimizer.service.SqlParserService;
@@ -17,8 +19,7 @@ import java.util.Map;
 
 /**
  * REST controller for SQL query analysis.
- * Phase 3: real SQL parsing via JSqlParser, rule-based index suggestions
- * and query optimization hints.
+ * Phase 5: ML-powered prediction via FastAPI service with heuristic fallback.
  */
 @RestController
 @RequestMapping("/api")
@@ -27,13 +28,16 @@ public class AnalyzeController {
     private final SqlParserService sqlParserService;
     private final IndexSuggestionService indexSuggestionService;
     private final QueryOptimizerService queryOptimizerService;
+    private final MlPredictionService mlPredictionService;
 
     public AnalyzeController(SqlParserService sqlParserService,
                              IndexSuggestionService indexSuggestionService,
-                             QueryOptimizerService queryOptimizerService) {
+                             QueryOptimizerService queryOptimizerService,
+                             MlPredictionService mlPredictionService) {
         this.sqlParserService = sqlParserService;
         this.indexSuggestionService = indexSuggestionService;
         this.queryOptimizerService = queryOptimizerService;
+        this.mlPredictionService = mlPredictionService;
     }
 
     @PostMapping("/analyze")
@@ -78,14 +82,16 @@ public class AnalyzeController {
         // --- Query optimization ---
         OptimizationResult optimization = queryOptimizerService.optimize(sql, parseResult);
 
-        // --- Heuristic-based predicted time (placeholder until ML model in Phase 5) ---
-        long predictedTime = estimateTime(parseResult);
-        boolean isSlow = predictedTime > 500;
+        // --- ML-powered prediction (with heuristic fallback) ---
+        PredictionResult prediction = mlPredictionService.predict(parseResult, sql);
 
         // --- Assemble response ---
         AnalyzeResponse response = new AnalyzeResponse();
-        response.setPredictedTime(predictedTime);
-        response.setSlow(isSlow);
+        response.setPredictedTime(Math.round(prediction.predictedTimeMs()));
+        response.setSlow(prediction.isSlow());
+        response.setSlowProbability(prediction.slowProbability());
+        response.setConfidence(prediction.confidence());
+        response.setPredictionSource(prediction.source());
         response.setSuggestedIndex(indexSuggestions.isEmpty() ? "-- No index suggestions" : indexSuggestions.get(0));
         response.setSuggestedIndexes(indexSuggestions);
         response.setOptimizedQuery(optimization.getOptimizedQuery());
@@ -93,23 +99,5 @@ public class AnalyzeController {
         response.setQueryFeatures(features);
 
         return ResponseEntity.ok(response);
-    }
-
-    /**
-     * Simple heuristic to estimate query execution time (ms).
-     * Will be replaced by ML prediction in Phase 5.
-     */
-    private long estimateTime(ParseResult r) {
-        long base = 10;
-        base += r.getTables().size() * 20L;
-        base += r.getJoins() * 80L;
-        base += r.getConditions() * 15L;
-        base += r.getSubqueries() * 200L;
-        if (r.isHasWildcard()) base += 50;
-        if (r.isHasOrderBy()) base += 60;
-        if (r.isHasGroupBy()) base += 70;
-        if (r.isHasDistinct()) base += 40;
-        if (!r.isHasLimit()) base += 30;
-        return base;
     }
 }
