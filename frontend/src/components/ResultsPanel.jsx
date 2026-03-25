@@ -1,8 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./ResultsPanel.css";
 
 export default function ResultsPanel({ result }) {
   const panelRef = useRef(null);
+  const [copied, setCopied] = useState(false);
 
   // Trigger stagger animation on mount
   useEffect(() => {
@@ -35,6 +36,17 @@ export default function ResultsPanel({ result }) {
   const formatTime = (ms) => {
     if (ms >= 1000) return `${(ms / 1000).toFixed(1)}s`;
     return `${ms}ms`;
+  };
+
+  const handleCopy = async () => {
+    if (!optimizedQuery) return;
+    try {
+      await navigator.clipboard.writeText(optimizedQuery);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1400);
+    } catch {
+      setCopied(false);
+    }
   };
 
   return (
@@ -172,7 +184,12 @@ export default function ResultsPanel({ result }) {
 
       {/* ---- Optimized Query ---- */}
       <div className="result-section">
-        <h3>Optimized Query</h3>
+        <div className="result-section-head">
+          <h3>Optimized Query</h3>
+          <button type="button" className={`copy-btn ${copied ? "copied" : ""}`} onClick={handleCopy}>
+            {copied ? "Copied" : "Copy code"}
+          </button>
+        </div>
         <pre className="code-block code-optimized">{optimizedQuery}</pre>
       </div>
     </div>

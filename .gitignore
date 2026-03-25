@@ -10,12 +10,13 @@ frontend/node_modules/
 frontend/dist/
 
 # === Python ===
-ml-service/__pycache__/
-ml-service/*.pyc
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
 ml-service/.venv/
-dataset-generator/__pycache__/
-dataset-generator/*.pyc
 dataset-generator/.venv/
+.github/prompts/**/__pycache__/
 
 # === IDE ===
 .idea/

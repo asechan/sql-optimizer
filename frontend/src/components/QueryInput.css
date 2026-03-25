@@ -1,171 +1,125 @@
-/* ==========================================
-   QUERY INPUT COMPONENT
-   ========================================== */
 .query-input {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.78rem;
 }
 
-/* --- Header row --- */
 .qi-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.45rem;
 }
 
 .qi-header label {
-  font-weight: 600;
+  color: var(--text-0);
+  font-family: "IBM Plex Mono", monospace;
   font-size: 0.8rem;
-  color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.11em;
 }
 
 .qi-meta {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-  font-family: "JetBrains Mono", monospace;
-  font-weight: 500;
-  transition: color var(--transition-base);
+  color: var(--text-2);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.76rem;
+  letter-spacing: 0.06em;
 }
 
-/* --- Textarea wrapper with line numbers --- */
 .textarea-wrapper {
   display: flex;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-primary);
-  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: rgba(7, 10, 16, 0.92);
   overflow: hidden;
-  transition:
-    border-color var(--transition-base),
-    box-shadow var(--transition-slow);
-  position: relative;
+  transition: border-color var(--ease), box-shadow var(--ease), transform var(--ease);
 }
 
 .textarea-wrapper.focused {
-  border-color: var(--accent-blue);
-  box-shadow:
-    0 0 0 3px rgba(59, 130, 246, 0.1),
-    0 0 20px rgba(59, 130, 246, 0.06);
-  animation: pulse-glow 3s ease-in-out infinite;
-}
-
-/* Animated top border on focus */
-.textarea-wrapper::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  right: 50%;
-  height: 1px;
-  background: var(--gradient-primary);
-  transition: left var(--transition-slow), right var(--transition-slow);
-  pointer-events: none;
-}
-
-.textarea-wrapper.focused::after {
-  left: 0;
-  right: 0;
+  border-color: rgba(127, 169, 255, 0.65);
+  box-shadow: 0 0 0 3px rgba(127, 169, 255, 0.14);
+  transform: translateY(-1px);
 }
 
 .line-numbers {
-  display: flex;
-  flex-direction: column;
-  padding: 1rem 0;
-  min-width: 38px;
-  background: rgba(5, 10, 21, 0.5);
-  border-right: 1px solid var(--border-primary);
+  min-width: 46px;
+  padding: 1.08rem 0;
+  border-right: 1px solid var(--line);
+  background: rgba(14, 20, 31, 0.9);
   user-select: none;
 }
 
 .line-numbers span {
   display: block;
   text-align: center;
-  font-family: "JetBrains Mono", monospace;
-  font-size: 0.75rem;
-  line-height: 1.65;
-  color: var(--text-muted);
-  transition: color var(--transition-fast);
-}
-
-.textarea-wrapper.focused .line-numbers span {
-  color: var(--text-secondary);
+  color: #4f5e78;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.76rem;
+  line-height: 1.74;
 }
 
 .query-input textarea {
   flex: 1;
-  background: transparent;
-  color: var(--text-primary);
   border: none;
-  padding: 1rem;
-  font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", monospace;
-  font-size: 0.88rem;
-  line-height: 1.65;
+  background: transparent;
+  color: #dce9ff;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.94rem;
+  line-height: 1.74;
+  padding: 1.08rem;
+  min-height: 220px;
   resize: vertical;
-  min-height: 140px;
-  transition: color var(--transition-base);
 }
 
 .query-input textarea::placeholder {
-  color: var(--text-muted);
+  color: #60708d;
 }
 
 .query-input textarea:focus {
   outline: none;
 }
 
-/* --- Actions row --- */
 .qi-actions {
   display: flex;
   justify-content: flex-end;
-  padding-top: 0.25rem;
 }
 
-/* --- Button with ripple --- */
 .analyze-btn {
   position: relative;
   overflow: hidden;
-  background: var(--gradient-primary);
-  background-size: 200% 200%;
-  color: white;
-  border: none;
-  padding: 0.8rem 2.25rem;
-  border-radius: var(--radius-md);
+  border: 1px solid rgba(127, 169, 255, 0.48);
+  border-radius: 999px;
+  background: linear-gradient(130deg, rgba(127, 169, 255, 0.22), rgba(124, 231, 255, 0.11));
+  color: #e8f0ff;
+  padding: 0.74rem 1.32rem;
+  min-width: 210px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
   font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  transition:
-    transform var(--transition-fast),
-    box-shadow var(--transition-base),
-    background-position var(--transition-slow);
-  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) 0.5s both;
+  justify-content: center;
+  gap: 0.38rem;
+  cursor: pointer;
+  transition: transform var(--ease), border-color var(--ease), box-shadow var(--ease), background var(--ease);
 }
 
 .analyze-btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow:
-    0 6px 20px rgba(59, 130, 246, 0.35),
-    0 2px 8px rgba(139, 92, 246, 0.2);
-  background-position: 100% 0;
-}
-
-.analyze-btn:active:not(:disabled) {
-  transform: translateY(0) scale(0.98);
+  transform: translateY(-1px);
+  border-color: rgba(124, 231, 255, 0.62);
+  box-shadow: 0 16px 30px rgba(18, 80, 121, 0.4);
+  background: linear-gradient(130deg, rgba(127, 169, 255, 0.3), rgba(124, 231, 255, 0.2));
 }
 
 .analyze-btn:disabled {
-  opacity: 0.4;
+  opacity: 0.5;
   cursor: not-allowed;
-  filter: grayscale(0.3);
 }
 
 .analyze-btn.loading {
-  background-position: 100% 0;
-  animation: gradientShift 2s ease infinite;
+  animation: pulse 1.15s ease infinite;
 }
 
 .btn-text {
@@ -173,58 +127,44 @@
   z-index: 1;
 }
 
-/* Ripple effect */
 .btn-ripple {
   position: absolute;
   width: 10px;
   height: 10px;
-  background: rgba(255, 255, 255, 0.35);
-  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.34);
+  border-radius: 999px;
   transform: scale(0);
-  animation: ripple 0.6s ease-out;
-  pointer-events: none;
+  animation: ripple 600ms ease-out;
 }
 
-/* Loading dots */
 .btn-dots {
-  display: flex;
+  display: inline-flex;
   gap: 3px;
-  align-items: center;
 }
 
 .btn-dots i {
-  display: block;
   width: 4px;
   height: 4px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.8);
-  animation: breathe 1.4s ease-in-out infinite;
+  border-radius: 999px;
+  background: #d9e7ff;
+  animation: pulse 900ms ease infinite;
 }
 
 .btn-dots i:nth-child(2) {
-  animation-delay: 0.2s;
+  animation-delay: 140ms;
 }
 
 .btn-dots i:nth-child(3) {
-  animation-delay: 0.4s;
+  animation-delay: 280ms;
 }
 
-/* ==========================================
-   RESPONSIVE
-   ========================================== */
-@media (max-width: 640px) {
+@media (max-width: 720px) {
   .qi-header {
     flex-direction: column;
     align-items: flex-start;
-    gap: 0.25rem;
   }
 
   .analyze-btn {
     width: 100%;
-    justify-content: center;
-  }
-
-  .line-numbers {
-    min-width: 30px;
   }
 }

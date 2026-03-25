@@ -1,0 +1,16 @@
+.magnetLines-container {
+  justify-items: center;
+  align-items: center;
+  pointer-events: none;
+  mix-blend-mode: screen;
+}
+
+.magnetLines-container span {
+  display: block;
+  transform-origin: center;
+  will-change: transform;
+  transform: rotate(var(--rotate));
+  transition: transform 180ms ease-out;
+  opacity: 0.95;
+  box-shadow: 0 0 8px rgba(140, 198, 255, 0.32);
+}
