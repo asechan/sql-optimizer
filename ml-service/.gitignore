@@ -1,0 +1,15 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Local env
+.venv/
+.env
+*.env.local
+
+# Training outputs
+models/*.joblib
+models/*.pkl
+models/*.json

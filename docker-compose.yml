@@ -16,8 +16,8 @@ services:
       - "8080:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/sql_optimizer
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_USERNAME=${DB_USER:-postgres}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-postgres}
       - ML_SERVICE_URL=http://ml-service:8000
     depends_on:
       ml-service:
@@ -52,8 +52,8 @@ services:
       - "5432:5432"
     environment:
       - POSTGRES_DB=sql_optimizer
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=${POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -64,5 +64,26 @@ services:
       retries: 3
     restart: unless-stopped
 
+
+  tpch-postgres:
+    image: postgres:15-alpine
+    profiles: ["benchmark"]
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_DB=tpch
+      - POSTGRES_USER=${TPCH_POSTGRES_USER:-postgres}
+      - POSTGRES_PASSWORD=${TPCH_POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - tpch_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d tpch"]
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    restart: unless-stopped
+
 volumes:
   pgdata:
+  tpch_pgdata:

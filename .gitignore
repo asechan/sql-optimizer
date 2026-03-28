@@ -10,6 +10,7 @@ frontend/node_modules/
 frontend/dist/
 
 # === Python ===
+.venv/
 **/__pycache__/
 **/*.pyc
 **/*.pyo
@@ -38,4 +39,8 @@ docker-compose.override.yml
 # === ML artifacts ===
 ml-service/models/*.pkl
 ml-service/models/*.joblib
+ml-service/models/*.json
 dataset-generator/output/
+
+# === External tooling (local only) ===
+tools/tpch-dbgen/
