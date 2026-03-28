@@ -54,16 +54,24 @@ JOIN_PAIRS = [
 ]
 
 PATTERN_WEIGHTS = {
-    "simple_select":       15,
-    "select_where":        20,
-    "select_where_order":  12,
+    "simple_select":       10,
+    "select_where":        18,
+    "select_where_order":  10,
     "select_limit":        8,
-    "select_join":         15,
+    "select_join":         12,
     "select_multi_join":   8,
     "select_subquery":     6,
-    "select_group_by":     8,
-    "select_having":       4,
-    "select_distinct":     4,
+    "select_group_by":     7,
+    "select_having":       3,
+    "select_distinct":     3,
+    "select_order_limit":  8,
+    "select_join_order_limit": 7,
+    "select_cte":          5,
+    "select_exists":       6,
+    "select_union_all":    4,
+    "select_case_when":    4,
+    "select_window_fn":    5,
+    "select_correlated_subquery": 4,
 }
 
 OUTPUT_DIR   = "output"

@@ -56,6 +56,29 @@ def simulate_execution_time(features: dict, pattern: str) -> float:
     qlen = features.get("query_length", 50)
     base += math.log1p(qlen) * random.uniform(0.5, 2.0)
 
+    # Pattern-aware adjustments for advanced query constructs.
+    if pattern == "select_cte":
+        base += random.uniform(60, 180)
+        base *= random.uniform(1.05, 1.2)
+    elif pattern == "select_exists":
+        base += random.uniform(90, 230)
+        base *= random.uniform(1.08, 1.25)
+    elif pattern == "select_union_all":
+        base += random.uniform(80, 220)
+        base *= random.uniform(1.05, 1.18)
+    elif pattern == "select_case_when":
+        base += random.uniform(30, 120)
+    elif pattern == "select_window_fn":
+        base += random.uniform(130, 320)
+        base *= random.uniform(1.1, 1.3)
+    elif pattern == "select_correlated_subquery":
+        base += random.uniform(160, 420)
+        base *= random.uniform(1.15, 1.45)
+    elif pattern == "select_join_order_limit":
+        base += random.uniform(70, 180)
+    elif pattern == "select_order_limit":
+        base += random.uniform(20, 80)
+
     # Gaussian noise
     noise = random.gauss(1.0, 0.15)
     base *= max(0.5, noise)

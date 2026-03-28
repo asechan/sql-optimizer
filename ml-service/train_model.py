@@ -65,6 +65,28 @@ def load_dataset(path: str) -> pd.DataFrame:
     if "is_slow" not in df.columns:
         raise ValueError("Missing target column: is_slow")
 
+    # Coerce numeric columns so merged datasets with mixed sources are handled safely.
+    numeric_cols = FEATURE_COLUMNS + ["execution_time_ms", "is_slow"]
+    for col in numeric_cols:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    before = len(df)
+    df = df.dropna(subset=numeric_cols)
+    df = df[df["execution_time_ms"] > 0]
+    df["is_slow"] = df["is_slow"].astype(int)
+    after = len(df)
+
+    if after == 0:
+        raise ValueError("Dataset has no valid rows after cleaning")
+
+    if before != after:
+        print(f"  Dropped {before - after:,} invalid rows during cleaning")
+
+    if "source" in df.columns:
+        print("  Source distribution:")
+        for src, count in df["source"].value_counts().items():
+            print(f"    {src:15s} {count:8,d}")
+
     return df
 
 

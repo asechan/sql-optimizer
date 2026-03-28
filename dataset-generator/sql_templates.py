@@ -407,6 +407,299 @@ def gen_select_distinct() -> dict:
     }
 
 
+def gen_select_order_limit() -> dict:
+    table = _pick_table()
+    select_cols = _pick_columns(table, random.randint(2, 4))
+
+    where_clause, where_cols = _where_condition(table, random.randint(1, 2))
+    order_clause, order_cols = _order_by(table)
+    limit = random.choice([10, 25, 50, 100, 200])
+
+    sql = (
+        f"SELECT {', '.join(f'{table}.{c}' for c in select_cols)} "
+        f"FROM {table} WHERE {where_clause} {order_clause} LIMIT {limit};"
+    )
+
+    return {
+        "sql": sql,
+        "tables": [table],
+        "joins": 0,
+        "conditions": len(where_cols),
+        "subqueries": 0,
+        "has_wildcard": False,
+        "has_order_by": True,
+        "has_group_by": False,
+        "has_having": False,
+        "has_distinct": False,
+        "has_limit": True,
+        "where_columns": where_cols,
+        "order_by_columns": order_cols,
+        "group_by_columns": [],
+        "pattern": "select_order_limit",
+    }
+
+
+def gen_select_join_order_limit() -> dict:
+    child, child_col, parent, parent_col = random.choice(JOIN_PAIRS)
+
+    cols_child = _pick_columns(child, random.randint(1, 3))
+    cols_parent = _pick_columns(parent, random.randint(1, 2))
+    select_cols = [f"{child}.{c}" for c in cols_child] + [f"{parent}.{c}" for c in cols_parent]
+
+    where_table = random.choice([child, parent])
+    where_clause, where_cols = _where_condition(where_table, random.randint(1, 2))
+    order_table = random.choice([child, parent])
+    order_clause, order_cols = _order_by(order_table)
+    limit = random.choice([20, 50, 100, 250])
+
+    sql = (
+        f"SELECT {', '.join(select_cols)} FROM {child} "
+        f"JOIN {parent} ON {child}.{child_col} = {parent}.{parent_col} "
+        f"WHERE {where_clause} {order_clause} LIMIT {limit};"
+    )
+
+    return {
+        "sql": sql,
+        "tables": [child, parent],
+        "joins": 1,
+        "conditions": len(where_cols),
+        "subqueries": 0,
+        "has_wildcard": False,
+        "has_order_by": True,
+        "has_group_by": False,
+        "has_having": False,
+        "has_distinct": False,
+        "has_limit": True,
+        "where_columns": where_cols,
+        "order_by_columns": order_cols,
+        "group_by_columns": [],
+        "pattern": "select_join_order_limit",
+    }
+
+
+def gen_select_cte() -> dict:
+    table = _pick_table()
+    cte_cols = _pick_columns(table, random.randint(3, 5))
+    where_clause, where_cols = _where_condition(table, random.randint(1, 2))
+    order_clause, order_cols = _order_by(table)
+    limit = random.choice([25, 50, 100, 200])
+
+    select_list = ", ".join(f"{table}.{c}" for c in cte_cols)
+    sql = (
+        f"WITH base_rows AS ("
+        f"SELECT {select_list} FROM {table} WHERE {where_clause}"
+        f") "
+        f"SELECT {', '.join(cte_cols)} FROM base_rows {order_clause} LIMIT {limit};"
+    )
+
+    return {
+        "sql": sql,
+        "tables": [table],
+        "joins": 0,
+        "conditions": len(where_cols),
+        "subqueries": 1,
+        "has_wildcard": False,
+        "has_order_by": True,
+        "has_group_by": False,
+        "has_having": False,
+        "has_distinct": False,
+        "has_limit": True,
+        "where_columns": where_cols,
+        "order_by_columns": order_cols,
+        "group_by_columns": [],
+        "pattern": "select_cte",
+    }
+
+
+def gen_select_exists() -> dict:
+    child, child_col, parent, parent_col = random.choice(JOIN_PAIRS)
+    outer_table = parent
+    inner_table = child
+
+    outer_cols = _pick_columns(outer_table, random.randint(2, 4))
+    inner_where_clause, inner_where_cols = _where_condition(inner_table, 1)
+
+    sql = (
+        f"SELECT {', '.join(f'o.{c}' for c in outer_cols)} "
+        f"FROM {outer_table} o "
+        f"WHERE EXISTS ("
+        f"SELECT 1 FROM {inner_table} i "
+        f"WHERE i.{child_col} = o.{parent_col} AND {inner_where_clause}"
+        f");"
+    )
+
+    where_cols = [parent_col] + inner_where_cols
+    return {
+        "sql": sql,
+        "tables": [outer_table, inner_table],
+        "joins": 0,
+        "conditions": len(where_cols),
+        "subqueries": 1,
+        "has_wildcard": False,
+        "has_order_by": False,
+        "has_group_by": False,
+        "has_having": False,
+        "has_distinct": False,
+        "has_limit": False,
+        "where_columns": where_cols,
+        "order_by_columns": [],
+        "group_by_columns": [],
+        "pattern": "select_exists",
+    }
+
+
+def gen_select_union_all() -> dict:
+    table_a = _pick_table()
+    table_b = _pick_table()
+    cols_a = _pick_columns(table_a, random.randint(2, 3))
+    cols_b = _pick_columns(table_b, len(cols_a))
+
+    where_a, where_cols_a = _where_condition(table_a, 1)
+    where_b, where_cols_b = _where_condition(table_b, 1)
+
+    select_a = ", ".join(f"{table_a}.{c}" for c in cols_a)
+    select_b = ", ".join(f"{table_b}.{c}" for c in cols_b)
+
+    sql = (
+        f"SELECT {select_a} FROM {table_a} WHERE {where_a} "
+        f"UNION ALL "
+        f"SELECT {select_b} FROM {table_b} WHERE {where_b};"
+    )
+
+    return {
+        "sql": sql,
+        "tables": [table_a, table_b],
+        "joins": 0,
+        "conditions": len(where_cols_a) + len(where_cols_b),
+        "subqueries": 0,
+        "has_wildcard": False,
+        "has_order_by": False,
+        "has_group_by": False,
+        "has_having": False,
+        "has_distinct": False,
+        "has_limit": False,
+        "where_columns": where_cols_a + where_cols_b,
+        "order_by_columns": [],
+        "group_by_columns": [],
+        "pattern": "select_union_all",
+    }
+
+
+def gen_select_case_when() -> dict:
+    table = random.choice(["orders", "transactions", "payments", "invoices"])
+    cols = COLUMNS.get(table, ["id", "status"])
+    gb_col = random.choice([c for c in cols if c in ("status", "method", "type", "country")] or cols[:1])
+    metric_col = random.choice([c for c in cols if c in ("total", "amount", "price", "quantity")] or cols[:1])
+    threshold = _random_value(metric_col)
+
+    sql = (
+        f"SELECT {table}.{gb_col}, "
+        f"SUM(CASE WHEN {table}.{metric_col} > {threshold} THEN 1 ELSE 0 END) AS high_value_count, "
+        f"COUNT(*) AS total_rows "
+        f"FROM {table} "
+        f"GROUP BY {table}.{gb_col};"
+    )
+
+    return {
+        "sql": sql,
+        "tables": [table],
+        "joins": 0,
+        "conditions": 1,
+        "subqueries": 0,
+        "has_wildcard": False,
+        "has_order_by": False,
+        "has_group_by": True,
+        "has_having": False,
+        "has_distinct": False,
+        "has_limit": False,
+        "where_columns": [metric_col],
+        "order_by_columns": [],
+        "group_by_columns": [gb_col],
+        "pattern": "select_case_when",
+    }
+
+
+def gen_select_window_fn() -> dict:
+    table = random.choice(["orders", "transactions", "reviews", "tasks"])
+    cols = COLUMNS.get(table, ["id"])
+
+    partition_col = random.choice([c for c in cols if c.endswith("_id") or c in ("status", "type")] or [cols[0]])
+    order_col = random.choice([c for c in cols if "date" in c or c.endswith("_at") or c == "id"] or [cols[0]])
+
+    select_cols = _pick_columns(table, random.randint(2, 4))
+    where_clause, where_cols = _where_condition(table, 1)
+    limit = random.choice([50, 100, 200])
+
+    sql = (
+        f"SELECT {', '.join(f'{table}.{c}' for c in select_cols)}, "
+        f"ROW_NUMBER() OVER (PARTITION BY {table}.{partition_col} ORDER BY {table}.{order_col} DESC) AS row_num "
+        f"FROM {table} WHERE {where_clause} "
+        f"ORDER BY {table}.{partition_col} ASC LIMIT {limit};"
+    )
+
+    return {
+        "sql": sql,
+        "tables": [table],
+        "joins": 0,
+        "conditions": len(where_cols),
+        "subqueries": 0,
+        "has_wildcard": False,
+        "has_order_by": True,
+        "has_group_by": False,
+        "has_having": False,
+        "has_distinct": False,
+        "has_limit": True,
+        "where_columns": where_cols,
+        "order_by_columns": [partition_col, order_col],
+        "group_by_columns": [],
+        "pattern": "select_window_fn",
+    }
+
+
+def gen_select_correlated_subquery() -> dict:
+    outer_table = random.choice(["users", "customers", "projects", "products"])
+    related = [jp for jp in JOIN_PAIRS if jp[2] == outer_table or jp[0] == outer_table]
+    if not related:
+        related = [random.choice(JOIN_PAIRS)]
+
+    child, child_col, parent, parent_col = random.choice(related)
+    if outer_table == child:
+        inner_table = parent
+        outer_key = child_col
+        inner_key = parent_col
+    else:
+        inner_table = child
+        outer_key = parent_col
+        inner_key = child_col
+
+    outer_cols = _pick_columns(outer_table, random.randint(2, 3))
+    where_clause, where_cols = _where_condition(outer_table, 1)
+
+    sql = (
+        f"SELECT {', '.join(f'o.{c}' for c in outer_cols)}, "
+        f"(SELECT COUNT(*) FROM {inner_table} i WHERE i.{inner_key} = o.{outer_key}) AS related_count "
+        f"FROM {outer_table} o WHERE {where_clause};"
+    )
+
+    return {
+        "sql": sql,
+        "tables": [outer_table, inner_table],
+        "joins": 0,
+        "conditions": len(where_cols) + 1,
+        "subqueries": 1,
+        "has_wildcard": False,
+        "has_order_by": False,
+        "has_group_by": False,
+        "has_having": False,
+        "has_distinct": False,
+        "has_limit": False,
+        "where_columns": where_cols + [outer_key],
+        "order_by_columns": [],
+        "group_by_columns": [],
+        "pattern": "select_correlated_subquery",
+    }
+
+
 GENERATORS = {
     "simple_select":       gen_simple_select,
     "select_where":        gen_select_where,
@@ -418,4 +711,12 @@ GENERATORS = {
     "select_group_by":     gen_select_group_by,
     "select_having":       gen_select_having,
     "select_distinct":     gen_select_distinct,
+    "select_order_limit":  gen_select_order_limit,
+    "select_join_order_limit": gen_select_join_order_limit,
+    "select_cte":          gen_select_cte,
+    "select_exists":       gen_select_exists,
+    "select_union_all":    gen_select_union_all,
+    "select_case_when":    gen_select_case_when,
+    "select_window_fn":    gen_select_window_fn,
+    "select_correlated_subquery": gen_select_correlated_subquery,
 }
