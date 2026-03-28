@@ -17,14 +17,15 @@ function lerp(a, b, t) {
 
 export default function DotGrid({
   dotSize = 5,
-  gap = 15,
+  gap = 5,
   baseColor = "#1c283d",
   activeColor = "#7ccff9",
   proximity = 120,
   shockRadius = 250,
   shockStrength = 5,
   resistance = 750,
-  returnDuration = 1.5,
+  returnDuration = 4.5,
+  idleResetMs = 750,
   className = "",
   style,
 }) {
@@ -43,6 +44,8 @@ export default function DotGrid({
     lastX: 0,
     lastY: 0,
     lastTime: 0,
+    lastMoveTime: 0,
+    active: false,
     pendingX: 0,
     pendingY: 0,
   });
@@ -114,6 +117,8 @@ export default function DotGrid({
         p.lastX = p.pendingX;
         p.lastY = p.pendingY;
         p.lastTime = now;
+        p.lastMoveTime = now;
+        p.active = true;
       });
     };
 
@@ -122,6 +127,7 @@ export default function DotGrid({
       p.x = -9999;
       p.y = -9999;
       p.speed = 0;
+      p.active = false;
     };
 
     window.addEventListener("pointermove", onMove, { passive: true });
@@ -160,14 +166,20 @@ export default function DotGrid({
 
       const p = pointerRef.current;
       const dots = dotsRef.current;
-      const speedFactor = Math.min(p.speed / 1200, 1) * shockStrength;
+      const pointerIsIdle = p.active && p.lastMoveTime > 0 && now - p.lastMoveTime >= idleResetMs;
+      const pointerIsInactive = pointerIsIdle || !p.active;
+      const pointerX = pointerIsInactive ? -9999 : p.x;
+      const pointerY = pointerIsInactive ? -9999 : p.y;
+      const pointerSpeed = pointerIsInactive ? 0 : p.speed;
+
+      const speedFactor = Math.min(pointerSpeed / 1200, 1) * shockStrength;
       const decay = Math.exp(-dt * (resistance / 120));
       const settle = Math.min(dt / Math.max(returnDuration, 0.08) * 6, 1);
 
       for (let i = 0; i < dots.length; i += 1) {
         const dot = dots[i];
-        const dx = p.x - dot.x;
-        const dy = p.y - dot.y;
+        const dx = pointerX - dot.x;
+        const dy = pointerY - dot.y;
         const dist = Math.hypot(dx, dy);
 
         const near = Math.max(0, 1 - dist / proximity);
@@ -206,6 +218,7 @@ export default function DotGrid({
     proximity,
     resistance,
     returnDuration,
+    idleResetMs,
     shockRadius,
     shockStrength,
   ]);

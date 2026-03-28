@@ -128,7 +128,7 @@ function App() {
         rayLength={3}
         followMouse={false}
         mouseInfluence={0}
-        noiseAmount={0.03}
+        noiseAmount={0}
         distortion={0.1}
         fadeDistance={1}
         saturation={1}
@@ -136,18 +136,17 @@ function App() {
       />
       <DotGrid
         dotSize={2.4}
-        gap={16}
-        baseColor="#1b2940"
-        activeColor="#79b9f5"
-        proximity={125}
-        shockRadius={230}
-        shockStrength={4.2}
-        resistance={760}
-        returnDuration={1.45}
+        gap={15}
+        baseColor="#194182"
+        activeColor="#476c8e"
+        proximity={20}
+        shockRadius={100}
+        shockStrength={100}
+        resistance={1000}
+        returnDuration={1}
+        idleResetMs={1000}
         className="dotgrid-bg"
       />
-      <div className="grain" />
-
 
       <div className="app">
         <header className="topbar scroll-stage is-centered">

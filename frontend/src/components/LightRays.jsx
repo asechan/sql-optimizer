@@ -33,7 +33,7 @@ export default function LightRays({
   rayLength = 2.8,
   followMouse = true,
   mouseInfluence = 0.08,
-  noiseAmount = 0.06,
+  noiseAmount = 0,
   distortion = 0.16,
   fadeDistance = 1,
   saturation = 1,
